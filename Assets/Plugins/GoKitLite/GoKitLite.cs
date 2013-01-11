@@ -49,15 +49,15 @@ public class GoKitLite : MonoBehaviour
 		
 		internal void reset()
 		{
-			isRelativeTween = false;
+			// any pointers or values that are not guarnateed to be set later are defaulted here
 			transform = null;
 			targetVector = _startVector = _diffVector = Vector3.zero;
-			_elapsedTime = 0;
 			delay = 0;
+			loopType = LoopType.None;
 			easeFunction = null;
+			isRelativeTween = false;
 			onComplete = null;
 			customAction = null;
-			loopType = LoopType.None;
 			_material = null;
 		}
 
