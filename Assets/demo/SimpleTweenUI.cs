@@ -10,7 +10,8 @@ public class SimpleTweenUI : MonoBehaviour
 	
 	void Start()
 	{
-		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ), 1f );
+		// start it off with our cube friend coming into view
+		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ), 0.5f );
 	}
 	
 	
@@ -20,8 +21,8 @@ public class SimpleTweenUI : MonoBehaviour
 		
 		if( GUILayout.Button( "Position Tween with 1s Delay" ) )
 		{
-			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 10 ), 1f, GoKitLiteEasing.Bounce.EaseInOut )
-				.setLoopType( GoKitLite.LoopType.RestartFromBeginning );
+			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 10 ), 1f, GoKitLiteEasing.Bounce.EaseOut )
+				.setLoopType( GoKitLite.LoopType.PingPong, 3 );
 		}
 		
 		
@@ -83,9 +84,9 @@ public class SimpleTweenUI : MonoBehaviour
 			};
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Back.EaseOut )
 				.setCompletionHandler( t =>
-			{
-				Debug.Log( "All done with custom action" );
-			});
+				{
+					Debug.Log( "All done with custom action" );
+				});
 		}
 
 	}

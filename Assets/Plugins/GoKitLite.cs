@@ -135,6 +135,7 @@ public class GoKitLite : MonoBehaviour
 		/// </summary>
 		private void handleLooping()
 		{
+			loops--;
 			if( loopType == GoKitLite.LoopType.RestartFromBeginning )
 			{
 				setVectorAsRequired( _startVector );
@@ -144,8 +145,10 @@ public class GoKitLite : MonoBehaviour
 				targetVector = _startVector;
 			}
 
-			// kill our loop and delay then prepare for use
-			loopType = GoKitLite.LoopType.None;
+			// kill our loop if we have no loops left and zero out the delay then prepare for use
+			if( loops == 0 )
+				loopType = GoKitLite.LoopType.None;
+			
 			delay = 0;
 			prepareForUse();
 		}
