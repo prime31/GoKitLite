@@ -1,4 +1,4 @@
-using EaseFunction = System.Func<float, float, float, float, float>;
+using EaseFunction = System.Func<float, float, float>;
 using UnityEngine;
 using System;
 using System.Collections;
@@ -138,9 +138,6 @@ public class GoKitLite : MonoBehaviour
 		/// </summary>
 		internal bool tick( float deltaTime )
 		{
-			if( transform == null || transform.Equals( null ) )
-				return true;
-
 			// add deltaTime to our elapsed time and clamp it from -delay to duration
 			_elapsedTime = Mathf.Clamp( _elapsedTime + deltaTime, -delay, duration );
 
@@ -148,7 +145,7 @@ public class GoKitLite : MonoBehaviour
 			if( _elapsedTime <= 0 )
 				return false;
 			
-			var easedTime = easeFunction( _elapsedTime, 0, 1, duration );
+			var easedTime = easeFunction( _elapsedTime, duration );
 
 			// special case: Action tweens
 			if( tweenType == TweenType.Action )
@@ -156,13 +153,23 @@ public class GoKitLite : MonoBehaviour
 
 			if( targetValueType == TargetValueType.Vector3 )
 			{
-				var vec = unclampedVector3Lerp( _startVector, _diffVector, easedTime );
-				setVectorAsRequiredPerCurrentTweenType( vec );
+				var vec = new Vector3
+				(
+					_startVector.x + _diffVector.x * easedTime,
+	            	_startVector.y + _diffVector.y * easedTime,
+	            	_startVector.z + _diffVector.z * easedTime
+				);
+				setVectorAsRequiredPerCurrentTweenType( ref vec );
 			}
 			else if( targetValueType == TargetValueType.Color )
 			{
-				var col = unclampedColorLerp( _startColor, _diffColor, easedTime );
-				_material.color = col;
+				_material.color = new Color
+				(
+					_startColor.r + _diffColor.r * easedTime,
+					_startColor.g + _diffColor.g * easedTime,
+					_startColor.b + _diffColor.b * easedTime,
+					_startColor.a + _diffColor.a * easedTime
+				);
 			}
 
 			// if we have a loopType and we are done implement it
@@ -182,7 +189,7 @@ public class GoKitLite : MonoBehaviour
 			if( loopType == GoKitLite.LoopType.RestartFromBeginning )
 			{
 				if( targetValueType == TargetValueType.Vector3 )
-					setVectorAsRequiredPerCurrentTweenType( _startVector );
+					setVectorAsRequiredPerCurrentTweenType( ref _startVector );
 				else if( targetValueType == TargetValueType.Color )
 					_material.color = _startColor;
 			}
@@ -204,7 +211,7 @@ public class GoKitLite : MonoBehaviour
 		/// <summary>
 		/// if we have an appropriate tween type that takes a vector value this will correctly set it
 		/// </summary>
-		private void setVectorAsRequiredPerCurrentTweenType( Vector3 vec )
+		private void setVectorAsRequiredPerCurrentTweenType( ref Vector3 vec )
 		{
 			switch( tweenType )
 			{
@@ -226,34 +233,6 @@ public class GoKitLite : MonoBehaviour
 			}
 		}
 
-		
-		/// <summary>
-		/// unclamped lerp from v1 to v2. diff should be v2 - v1 (or just v2 for relative lerps)
-		/// </summary>
-	    private Vector3 unclampedVector3Lerp( Vector3 v1, Vector3 diff, float value )
-		{
-	        return new Vector3
-			(
-				v1.x + diff.x * value,
-	            v1.y + diff.y * value,
-	            v1.z + diff.z * value
-			);
-	    }
-
-
-		/// <summary>
-		/// unclamped lerp from c1 to c2. diff should be c2 - c1 (or just c2 for relative lerps)
-		/// </summary>
-		private static Color unclampedColorLerp( Color c1, Color diff, float value )
-		{
-	        return new Color
-			(
-				c1.r + diff.r * value,
-				c1.g + diff.g * value,
-				c1.b + diff.b * value,
-				c1.a + diff.a * value
-			);
-	    }
 
 		/// <summary>
 		/// chainable. sets the action that should be called when the tween is complete
@@ -305,8 +284,9 @@ public class GoKitLite : MonoBehaviour
 		RestartFromBeginning,
 		PingPong
 	}
-	
-	private List<Tween> _activeTweens = new List<Tween>();
+
+
+	private List<Tween> _activeTweens = new List<Tween>( 1500 );
 	private Queue<Tween> _tweenQueue;
 	private int _tweenIdCounter = 0;
 
@@ -349,11 +329,13 @@ public class GoKitLite : MonoBehaviour
 	
 	private void Update()
 	{
+		var dt = Time.deltaTime;
+
 		// loop backwards so we can remove completed tweens
 		for( var i = _activeTweens.Count - 1; i >= 0; --i )
 		{
 			var tween = _activeTweens[i];
-			if( tween.tick( Time.deltaTime ) )
+			if( tween.transform == null || tween.tick( dt ) )
 			{
 				if( tween.onComplete != null )
 					tween.onComplete( tween.transform );
@@ -371,14 +353,9 @@ public class GoKitLite : MonoBehaviour
 	{
 		Tween tween = null;
 		if( _tweenQueue.Count > 0 )
-		{
 			tween = _tweenQueue.Dequeue();
-			tween.reset();
-		}
 		else
-		{
 			tween = new Tween();
-		}
 		
 		tween.id = ++_tweenIdCounter;
 		tween.transform = trans;

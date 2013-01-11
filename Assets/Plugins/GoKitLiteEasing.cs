@@ -6,13 +6,13 @@ public static class GoKitLiteEasing
 {
 	public static class Linear
 	{
-		public static float EaseNone( float t, float b, float c, float d )
+		public static float EaseNone( float t, float d )
 		{
-			return c * t / d + b;
+			return t / d;
 		}
 
 
-	    public static float Punch( float t, float b, float c, float d )
+	    public static float Punch( float t, float d )
 	    {
 	        if( t == 0 )
 	            return 0;
@@ -21,307 +21,296 @@ public static class GoKitLiteEasing
 	            return 0;
 	
 	        const float p = 0.3f;
-	        return ( c * Mathf.Pow( 2, -10 * t ) * Mathf.Sin( t * ( 2 * Mathf.PI ) / p ) );
+	        return ( 1 * Mathf.Pow( 2, -10 * t ) * Mathf.Sin( t * ( 2 * Mathf.PI ) / p ) );
 	    }
 	}
 	
 	
 	public static class Quadratic
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c * ( t /= d ) * t + b;
+			return ( t /= d ) * t;
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return -c * ( t /= d ) * ( t - 2 ) + b;
+			return -1 * ( t /= d ) * ( t - 2 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( ( t /= d / 2 ) < 1 )
 			{
-				return c / 2 * t * t + b;
+				return 1 / 2 * t * t;
 			}
-			return -c / 2 * ( ( --t ) * ( t - 2 ) - 1 ) + b;
+			return -1 / 2 * ( ( --t ) * ( t - 2 ) - 1 );
 		}
 	}
 	
 	
 	public static class Back
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c * ( t /= d ) * t * ( ( 1.70158f + 1 ) * t - 1.70158f ) + b;
+			return ( t /= d ) * t * ( ( 1.70158f + 1 ) * t - 1.70158f );
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return c * ( ( t = t / d - 1 ) * t * ( ( 1.70158f + 1 ) * t + 1.70158f ) + 1 ) + b;
+			return ( ( t = t / d - 1 ) * t * ( ( 1.70158f + 1 ) * t + 1.70158f ) + 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			float s = 1.70158f;
 			if( ( t /= d / 2 ) < 1 )
 			{
-				return c / 2 * ( t * t * ( ( ( s *= ( 1.525f ) ) + 1 ) * t - s ) ) + b;
+				return 1 / 2 * ( t * t * ( ( ( s *= ( 1.525f ) ) + 1 ) * t - s ) );
 			}
-			return c / 2 * ( ( t -= 2 ) * t * ( ( ( s *= ( 1.525f ) ) + 1 ) * t + s ) + 2 ) + b;
+			return 1 / 2 * ( ( t -= 2 ) * t * ( ( ( s *= ( 1.525f ) ) + 1 ) * t + s ) + 2 );
 		}
 	}
 	
 	
 	public static class Bounce
 	{
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
 			if( ( t /= d ) < ( 1 / 2.75 ) )
 			{
-				return c * ( 7.5625f * t * t ) + b;
+				return ( 7.5625f * t * t );
 			}
 			else if( t < ( 2 / 2.75 ) )
 			{
-				return c * ( 7.5625f * ( t -= ( 1.5f / 2.75f ) ) * t + .75f ) + b;
+				return ( 7.5625f * ( t -= ( 1.5f / 2.75f ) ) * t + .75f );
 			}
 			else if( t < ( 2.5 / 2.75 ) )
 			{
-				return c * ( 7.5625f * ( t -= ( 2.25f / 2.75f ) ) * t + .9375f ) + b;
+				return ( 7.5625f * ( t -= ( 2.25f / 2.75f ) ) * t + .9375f );
 			}
 			else
 			{
-				return c * ( 7.5625f * ( t -= ( 2.625f / 2.75f ) ) * t + .984375f ) + b;
+				return ( 7.5625f * ( t -= ( 2.625f / 2.75f ) ) * t + .984375f );
 			}
 		}
 
 
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c - EaseOut( d - t, 0, c, d ) + b;
+			return 1 - EaseOut( d - t, d );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( t < d / 2 )
-				return EaseIn( t * 2, 0, c, d ) * 0.5f + b;
+				return EaseIn( t * 2, d ) * 0.5f;
 			else
-				return EaseOut( t * 2 - d, 0, c, d ) * .5f + c * 0.5f + b;
+				return EaseOut( t * 2 - d, d ) * .5f + 1 * 0.5f;
 		}
 	}
 
 
 	public static class Circular
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return -c * ( Mathf.Sqrt( 1 - ( t /= d ) * t ) - 1 ) + b;
+			return -( Mathf.Sqrt( 1 - ( t /= d ) * t ) - 1 );
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return c * Mathf.Sqrt( 1 - ( t = t / d - 1 ) * t ) + b;
+			return Mathf.Sqrt( 1 - ( t = t / d - 1 ) * t );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( ( t /= d / 2 ) < 1 )
 			{
-				return -c / 2 * ( Mathf.Sqrt( 1 - t * t ) - 1 ) + b;
+				return -1 / 2 * ( Mathf.Sqrt( 1 - t * t ) - 1 );
 			}
-			return c / 2 * ( Mathf.Sqrt( 1 - ( t -= 2 ) * t ) + 1 ) + b;
+			return 1 / 2 * ( Mathf.Sqrt( 1 - ( t -= 2 ) * t ) + 1 );
 		}
 	}
 
 
 	public static class Cubic
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c * ( t /= d ) * t * t + b;
+			return ( t /= d ) * t * t;
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return c * ( ( t = t / d - 1 ) * t * t + 1 ) + b;
+			return ( ( t = t / d - 1 ) * t * t + 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( ( t /= d / 2 ) < 1 )
 			{
-				return c / 2 * t * t * t + b;
+				return 1 / 2 * t * t * t;
 			}
-			return c / 2 * ( ( t -= 2 ) * t * t + 2 ) + b;
+			return 1 / 2 * ( ( t -= 2 ) * t * t + 2 );
 		}
 	}
 
 
 	public class Elastic
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
 			if( t == 0 )
-			{
-				return b;
-			}
+				return 0;
+
 			if( ( t /= d ) == 1 )
-			{
-				return b + c;
-			}
+				return 1;
+
 			float p = d * .3f;
 			float s = p / 4;
-			return -(float)( c * Mathf.Pow( 2, 10 * ( t -= 1 ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) ) + b;
+			return -( 1 * Mathf.Pow( 2, 10 * ( t -= 1 ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) );
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
 			if( t == 0 )
-			{
-				return b;
-			}
+				return 0;
+
 			if( ( t /= d ) == 1 )
-			{
-				return b + c;
-			}
+				return 1;
+
 			float p = d * .3f;
 			float s = p / 4;
-			return (float)( c * Mathf.Pow( 2, -10 * t ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) + c + b );
+			return ( 1 * Mathf.Pow( 2, -10 * t ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) + 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( t == 0 )
-			{
-				return b;
-			}
+				return 0;
+
 			if( ( t /= d / 2 ) == 2 )
-			{
-				return b + c;
-			}
+				return 1;
+
 			float p = d * ( .3f * 1.5f );
-			float a = c;
 			float s = p / 4;
+
 			if( t < 1 )
-			{
-				return -.5f * (float)( a * Mathf.Pow( 2, 10 * ( t -= 1 ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) ) + b;
-			}
-			return (float)( a * Mathf.Pow( 2, -10 * ( t -= 1 ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) * .5 + c + b );
+				return -.5f * ( Mathf.Pow( 2, 10 * ( t -= 1 ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) );
+
+			return ( Mathf.Pow( 2f, -10f * ( t -= 1f ) ) * Mathf.Sin( ( t * d - s ) * ( 2 * Mathf.PI ) / p ) * 0.5f + 1f );
 		}
 	}
 
 
 	public static class Exponential
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return ( t == 0 ) ? b : c * (float)Mathf.Pow( 2, 10 * ( t / d - 1 ) ) + b;
+			return ( t == 0 ) ? 0 : Mathf.Pow( 2, 10 * ( t / d - 1 ) );
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return ( t == d ) ? b + c : c * (float)( -Mathf.Pow( 2, -10 * t / d ) + 1 ) + b;
+			return t == d ? 1 : ( -Mathf.Pow( 2, -10 * t / d ) + 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( t == 0 )
-			{
-				return b;
-			}
+				return 0;
+
 			if( t == d )
-			{
-				return b + c;
-			}
+				return 1;
+
 			if( ( t /= d / 2 ) < 1 )
 			{ 
-				return c / 2 * (float)Mathf.Pow( 2, 10 * ( t - 1 ) ) + b; 
+				return 1 / 2 * Mathf.Pow( 2, 10 * ( t - 1 ) );
 			}
-			return c / 2 * (float)( -Mathf.Pow( 2, -10 * --t ) + 2 ) + b;
+			return 1 / 2 * ( -Mathf.Pow( 2, -10 * --t ) + 2 );
 		}
 	}
 
 
 	public static class Quartic
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c * ( t /= d ) * t * t * t + b;
+			return ( t /= d ) * t * t * t;
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return -c * ( ( t = t / d - 1 ) * t * t * t - 1 ) + b;
+			return -1 * ( ( t = t / d - 1 ) * t * t * t - 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( ( t /= d / 2 ) < 1 )
-			{
-				return c / 2 * t * t * t * t + b;
-			}
-			return -c / 2 * ( ( t -= 2 ) * t * t * t - 2 ) + b;
+				return 1 / 2 * t * t * t * t;
+
+			return -1 / 2 * ( ( t -= 2 ) * t * t * t - 2 );
 		}
 	}
 
 
 	public static class Quintic
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return c * ( t /= d ) * t * t * t * t + b;
+			return ( t /= d ) * t * t * t * t;
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return c * ( ( t = t / d - 1 ) * t * t * t * t + 1 ) + b;
+			return ( ( t = t / d - 1 ) * t * t * t * t + 1 );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
 			if( ( t /= d / 2 ) < 1 )
-			{
-				return c / 2 * t * t * t * t * t + b;
-			}
-			return c / 2 * ( ( t -= 2 ) * t * t * t * t + 2 ) + b;
+				return 1 / 2 * t * t * t * t * t;
+
+			return 1 / 2 * ( ( t -= 2 ) * t * t * t * t + 2 );
 		}
 	}
 
 
 	public static class Sinusoidal
 	{
-		public static float EaseIn( float t, float b, float c, float d )
+		public static float EaseIn( float t, float d )
 		{
-			return -c * (float)Mathf.Cos( t / d * ( Mathf.PI / 2 ) ) + c + b;
+			return -1 * Mathf.Cos( t / d * ( Mathf.PI / 2 ) ) + 1f;
 		}
 
 
-		public static float EaseOut( float t, float b, float c, float d )
+		public static float EaseOut( float t, float d )
 		{
-			return c * (float)Mathf.Sin( t / d * ( Mathf.PI / 2 ) ) + b;
+			return Mathf.Sin( t / d * ( Mathf.PI / 2 ) );
 		}
 
 
-		public static float EaseInOut( float t, float b, float c, float d )
+		public static float EaseInOut( float t, float d )
 		{
-			return -c / 2 * ( (float)Mathf.Cos( Mathf.PI * t / d ) - 1 ) + b;
+			return -1 / 2 * ( Mathf.Cos( Mathf.PI * t / d ) - 1 );
 		}
 	}
 
