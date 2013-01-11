@@ -148,7 +148,7 @@ public class GoKitLite : MonoBehaviour
 			// kill our loop if we have no loops left and zero out the delay then prepare for use
 			if( loops == 0 )
 				loopType = GoKitLite.LoopType.None;
-			
+
 			delay = 0;
 			prepareForUse();
 		}
@@ -358,30 +358,34 @@ public class GoKitLite : MonoBehaviour
 		var currentPosition = trans.position;
 		trans.position = targetPosition;
 
-		var tween = nextAvailableTween( trans, duration, TweenType.Position );
+		return positionTo( trans, duration, currentPosition, delay, easeFunction );
+	}
+		
+	
+	public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var tween = nextAvailableTween( trans, duration, TweenType.LocalPosition );
 		tween.delay = delay;
-		tween.targetVector = currentPosition;
+		tween.targetVector = targetPosition;
+		tween.easeFunction = easeFunction;
 		tween.prepareForUse();
 		
 		_activeTweens.Add( tween );
 		
 		return tween;
 	}
-		
-	
-	public int localPositionTo( Transform trans, float duration, Vector3 targetPosition )
+
+
+	public Tween localPositionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.LocalPosition );
-		tween.targetVector = targetPosition;
-		tween.prepareForUse();
-		
-		_activeTweens.Add( tween );
-		
-		return tween.id;
+		var currentPosition = trans.localPosition;
+		trans.localPosition = targetPosition;
+
+		return localPositionTo( trans, duration, currentPosition, delay, easeFunction );
 	}
 	
 	
-	public int scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null )
+	public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Scale );
 		tween.targetVector = targetScale;
@@ -390,20 +394,60 @@ public class GoKitLite : MonoBehaviour
 
 		_activeTweens.Add( tween );
 
-		return tween.id;
+		return tween;
 	}
 
 
-	public int rotationTo( Transform trans, float duration, Vector3 targetRotation, float delay = 0, EaseFunction easeFunction = null )
+	public Tween scaleFrom( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var currentScale = trans.localScale;
+		trans.localScale = targetScale;
+
+		return scaleTo( trans, duration, currentScale, delay, easeFunction );
+	}
+
+
+	public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Rotation );
-		tween.targetVector = targetRotation;
+		tween.targetVector = targetEulers;
 		tween.easeFunction = easeFunction;
 		tween.prepareForUse();
 
 		_activeTweens.Add( tween );
 
-		return tween.id;
+		return tween;
+	}
+
+
+	public Tween rotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var currentEulers = trans.eulerAngles;
+		trans.eulerAngles = targetEulers;
+
+		return rotationTo( trans, duration, currentEulers, delay, easeFunction );
+	}
+
+
+	public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var tween = nextAvailableTween( trans, duration, TweenType.LocalRotation );
+		tween.targetVector = targetEulers;
+		tween.easeFunction = easeFunction;
+		tween.prepareForUse();
+
+		_activeTweens.Add( tween );
+
+		return tween;
+	}
+
+
+	public Tween localRotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var currentEulers = trans.localEulerAngles;
+		trans.localEulerAngles = targetEulers;
+
+		return localRotationTo( trans, duration, currentEulers, delay, easeFunction );
 	}
 
 
