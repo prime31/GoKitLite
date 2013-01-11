@@ -40,7 +40,7 @@ public class GoKitLite : MonoBehaviour
 		private Color _diffColor;
 		private Material _material;
 
-		internal Action<float> customAction;
+		internal Action<Transform,float> customAction;
 
 		// internal state
 		private float _elapsedTime;
@@ -149,7 +149,7 @@ public class GoKitLite : MonoBehaviour
 
 			// special case: Action tweens
 			if( tweenType == TweenType.Action )
-				customAction( easedTime );
+				customAction( transform, easedTime );
 
 			if( targetValueType == TargetValueType.Vector3 )
 			{
@@ -490,7 +490,7 @@ public class GoKitLite : MonoBehaviour
 	}
 
 
-	public Tween customAction( Transform trans, float duration, Action<float> action, float delay = 0, EaseFunction easeFunction = null )
+	public Tween customAction( Transform trans, float duration, Action<Transform,float> action, float delay = 0, EaseFunction easeFunction = null )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Action );
 		tween.easeFunction = easeFunction;

@@ -64,11 +64,11 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Custom Action Tween of Alpha to 0" ) )
 		{
-			System.Action<float> action = dt =>
+			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
-				var color = cube.renderer.material.color;
+				var color = trans.renderer.material.color;
 				color.a = 1 - dt;
-				cube.renderer.material.color = color;
+				trans.renderer.material.color = color;
 			};
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Back.EaseOut );
 		}
@@ -76,11 +76,11 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Custom Action Tween of Alpha to 1" ) )
 		{
-			System.Action<float> action = dt =>
+			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
-				var color = cube.renderer.material.color;
+				var color = trans.renderer.material.color;
 				color.a = dt;
-				cube.renderer.material.color = color;
+				trans.renderer.material.color = color;
 			};
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Back.EaseOut )
 				.setCompletionHandler( t =>
