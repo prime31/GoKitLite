@@ -89,5 +89,25 @@ public class SimpleTweenUI : MonoBehaviour
 				});
 		}
 
+
+		if( GUILayout.Button( "Color to Red" ) )
+		{
+			GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.red );
+		}
+
+
+		if( GUILayout.Button( "Color Cycler" ) )
+		{
+			GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.blue )
+				.setCompletionHandler( trans =>
+				{
+					GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.red )
+						.setCompletionHandler( tran =>
+						{
+							GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.green ).setLoopType( GoKitLite.LoopType.PingPong, 10 );
+						});
+				});
+		}
+
 	}
 }

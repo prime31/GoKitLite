@@ -10,6 +10,13 @@ public class GoKitLite : MonoBehaviour
 {
 	public class Tween
 	{
+		private enum TargetValueType
+		{
+			None,
+			Vector3,
+			Color
+		}
+
 		// common properties
 		internal int id;
 		internal Transform transform;
@@ -22,13 +29,22 @@ public class GoKitLite : MonoBehaviour
 		internal LoopType loopType;
 		internal int loops = 0;
 		
-		// tweenable properties
+		// tweenable properties: Vector3
 		internal Vector3 targetVector;
 		private Vector3 _startVector;
 		private Vector3 _diffVector;
+
+		// Color
+		internal Color targetColor;
+		private Color _startColor;
+		private Color _diffColor;
+		private Material _material;
+
 		internal Action<float> customAction;
 
+		// internal state
 		private float _elapsedTime;
+		private TargetValueType targetValueType;
 		
 		
 		internal void reset()
@@ -42,6 +58,7 @@ public class GoKitLite : MonoBehaviour
 			onComplete = null;
 			customAction = null;
 			loopType = LoopType.None;
+			_material = null;
 		}
 
 
@@ -56,15 +73,19 @@ public class GoKitLite : MonoBehaviour
 			switch( tweenType )
 			{
 				case TweenType.Position:
+					targetValueType = TargetValueType.Vector3;
 					_startVector = transform.position;
 					break;
 				case TweenType.LocalPosition:
+					targetValueType = TargetValueType.Vector3;
 					_startVector = transform.localPosition;
 					break;
 				case TweenType.Scale:
+					targetValueType = TargetValueType.Vector3;
 					_startVector = transform.localScale;
 					break;
 				case TweenType.Rotation:
+					targetValueType = TargetValueType.Vector3;
 					_startVector = transform.rotation.eulerAngles;
 
 					if( isRelativeTween )
@@ -73,6 +94,7 @@ public class GoKitLite : MonoBehaviour
 						_diffVector = new Vector3( Mathf.DeltaAngle( _startVector.x, targetVector.x ), Mathf.DeltaAngle( _startVector.y, targetVector.y ), Mathf.DeltaAngle( _startVector.z, targetVector.z ) );
 					break;
 				case TweenType.LocalRotation:
+					targetValueType = TargetValueType.Vector3;
 					_startVector = transform.localRotation.eulerAngles;
 
 					if( isRelativeTween )
@@ -80,17 +102,33 @@ public class GoKitLite : MonoBehaviour
 					else
 						_diffVector = new Vector3( Mathf.DeltaAngle( _startVector.x, targetVector.x ), Mathf.DeltaAngle( _startVector.y, targetVector.y ), Mathf.DeltaAngle( _startVector.z, targetVector.z ) );
 					break;
+				case TweenType.Color:
+					targetValueType = TargetValueType.Color;
+					break;
+				case TweenType.Action:
+					targetValueType = TargetValueType.None;
+					break;
 			}
 			
 			_elapsedTime = -delay;
 
 			// we have to be careful with rotations because we always want to rotate in the shortest angle so we set the diffValue with that in mind
-			if( tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation && tweenType != TweenType.Action )
+			if( tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation && targetValueType == TargetValueType.Vector3 )
 			{
 				if( isRelativeTween )
 					_diffVector = targetVector;
 				else
 					_diffVector = targetVector - _startVector;
+			}
+			else if( targetValueType == TargetValueType.Color )
+			{
+				_material = transform.renderer.material;
+				_startColor = _material.color;
+
+				if( isRelativeTween )
+					_diffColor = targetColor;
+				else
+					_diffColor = targetColor - _startColor;
 			}
 		}
 
@@ -114,13 +152,18 @@ public class GoKitLite : MonoBehaviour
 
 			// special case: Action tweens
 			if( tweenType == TweenType.Action )
-			{
 				customAction( easedTime );
-				return _elapsedTime == duration;
-			}
 
-			var vec = unclampedVector3Lerp( _startVector, _diffVector, easedTime );
-			setVectorAsRequired( vec );
+			if( targetValueType == TargetValueType.Vector3 )
+			{
+				var vec = unclampedVector3Lerp( _startVector, _diffVector, easedTime );
+				setVectorAsRequiredPerCurrentTweenType( vec );
+			}
+			else if( targetValueType == TargetValueType.Color )
+			{
+				var col = unclampedColorLerp( _startColor, _diffColor, easedTime );
+				_material.color = col;
+			}
 
 			// if we have a loopType and we are done implement it
 			if( loopType != GoKitLite.LoopType.None && _elapsedTime == duration )
@@ -138,11 +181,15 @@ public class GoKitLite : MonoBehaviour
 			loops--;
 			if( loopType == GoKitLite.LoopType.RestartFromBeginning )
 			{
-				setVectorAsRequired( _startVector );
+				if( targetValueType == TargetValueType.Vector3 )
+					setVectorAsRequiredPerCurrentTweenType( _startVector );
+				else if( targetValueType == TargetValueType.Color )
+					_material.color = _startColor;
 			}
 			else // ping-pong
 			{
 				targetVector = _startVector;
+				targetColor = _startColor;
 			}
 
 			// kill our loop if we have no loops left and zero out the delay then prepare for use
@@ -157,7 +204,7 @@ public class GoKitLite : MonoBehaviour
 		/// <summary>
 		/// if we have an appropriate tween type that takes a vector value this will correctly set it
 		/// </summary>
-		private void setVectorAsRequired( Vector3 vec )
+		private void setVectorAsRequiredPerCurrentTweenType( Vector3 vec )
 		{
 			switch( tweenType )
 			{
@@ -193,6 +240,20 @@ public class GoKitLite : MonoBehaviour
 			);
 	    }
 
+
+		/// <summary>
+		/// unclamped lerp from c1 to c2. diff should be c2 - c1 (or just c2 for relative lerps)
+		/// </summary>
+		private static Color unclampedColorLerp( Color c1, Color diff, float value )
+		{
+	        return new Color
+			(
+				c1.r + diff.r * value,
+				c1.g + diff.g * value,
+				c1.b + diff.b * value,
+				c1.a + diff.a * value
+			);
+	    }
 
 		/// <summary>
 		/// chainable. sets the action that should be called when the tween is complete
@@ -233,6 +294,7 @@ public class GoKitLite : MonoBehaviour
 		Rotation,
 		LocalRotation,
 		Scale,
+	    Color,
 		Action
 	}
 
@@ -295,7 +357,7 @@ public class GoKitLite : MonoBehaviour
 			{
 				if( tween.onComplete != null )
 					tween.onComplete( tween.transform );
-				removeTween( tween );
+				removeTween( tween, i );
 			}
 		}
 	}
@@ -326,10 +388,10 @@ public class GoKitLite : MonoBehaviour
 		return tween;
 	}
 	
-	
-	private void removeTween( Tween tween )
+
+	private void removeTween( Tween tween, int index )
 	{
-		_activeTweens.Remove( tween );
+		_activeTweens.RemoveAt( index );
 		tween.reset();
 		_tweenQueue.Enqueue( tween );
 	}
@@ -462,7 +524,31 @@ public class GoKitLite : MonoBehaviour
 
 		return tween;
 	}
-	
+
+
+	public Tween colorTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var tween = nextAvailableTween( trans, duration, TweenType.Color );
+		tween.delay = delay;
+		tween.targetColor = targetColor;
+		tween.easeFunction = easeFunction;
+		tween.prepareForUse();
+
+		_activeTweens.Add( tween );
+
+		return tween;
+	}
+
+
+	public Tween colorFrom( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null )
+	{
+		var currentColor = trans.renderer.material.color;
+		trans.renderer.material.color = targetColor;
+
+		return colorTo( trans, duration, currentColor, delay, easeFunction );
+	}
+
+
 	#endregion
 
 
@@ -481,7 +567,7 @@ public class GoKitLite : MonoBehaviour
 				if( bringToCompletion )
 					_activeTweens[i].tick( float.MaxValue );
 
-				removeTween( _activeTweens[i] );
+				removeTween( _activeTweens[i], i );
 				return true;
 			}
 		}
