@@ -21,6 +21,16 @@ Up above we mentioned that you can use a custom Action to handle a tween as well
         // do something really cool here like tweening a string or changing multiple objects/properties at once
     });
 
+GoKitLite also has a tween queue system to setup a series of tweens that will all run one after the other. Here is an example alternating positionTo and rotationTo tweens with a completion handler that will fire when the entire chain is complete:
+
+    new GoKitLite.TweenQueue().add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( -8, -3, 0 ), 0, GoKitLiteEasing.Quadratic.EaseInOut ); } )
+    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 90f, 0, 0 ), 0, GoKitLiteEasing.Quadratic.EaseInOut ); } )
+    	.add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 1, 2, -5 ), 0, GoKitLiteEasing.Quadratic.EaseInOut ); } )
+    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 0, 90, 90 ), 0, GoKitLiteEasing.Quadratic.EaseInOut ); } )
+    	.add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 0, 0, 0 ), 0, GoKitLiteEasing.Quadratic.EaseInOut ); } )
+    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 360, 360, 0 ), 0, GoKitLiteEasing.Quadratic.EaseInOut, true ); } )
+    	.setCompletionHandler( () => { Debug.Log( "Position and Rotation Queue Done" ); } )
+    	.start();
 
 
 What about GoKit?
