@@ -19,10 +19,16 @@ public class SimpleTweenUI : MonoBehaviour
 	{
 		GUI.matrix = Matrix4x4.Scale( new Vector3( 2, 2, 2 ) );
 		
-		if( GUILayout.Button( "Position Tween with 1s Delay" ) )
+		if( GUILayout.Button( "Position Tween with 1s Delay and PingPong Loop" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 10 ), 1f, GoKitLiteEasing.Bounce.EaseOut )
 				.setLoopType( GoKitLite.LoopType.PingPong, 3 );
+		}
+
+
+		if( GUILayout.Button( "Relative Position Tween" ) )
+		{
+			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 1, 0, 0 ), 0, GoKitLiteEasing.Cubic.EaseIn, true );
 		}
 		
 		
@@ -59,6 +65,12 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Rotation to 0,310,0" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 0, 310, 0 ), 0, GoKitLiteEasing.Back.EaseOut );
+		}
+
+
+		if( GUILayout.Button( "Rotation by 360,0,0 (relative tween)" ) )
+		{
+			GoKitLite.instance.rotationTo( cube, 1, new Vector3( 360f, 0, 0 ), 0, GoKitLiteEasing.Back.EaseOut, true );
 		}
 
 

@@ -113,7 +113,7 @@ public class GoKitLite : MonoBehaviour
 			_elapsedTime = -delay;
 
 			// we have to be careful with rotations because we always want to rotate in the shortest angle so we set the diffValue with that in mind
-			if( tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation && targetValueType == TargetValueType.Vector3 )
+			if( targetValueType == TargetValueType.Vector3 && tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation)
 			{
 				if( isRelativeTween )
 					_diffVector = targetVector;
@@ -235,7 +235,7 @@ public class GoKitLite : MonoBehaviour
 
 
 		/// <summary>
-		/// chainable. sets the action that should be called when the tween is complete
+		/// chainable. sets the action that should be called when the tween is complete. do not store a reference to the tween!
 		/// </summary>
 		public Tween setCompletionHandler( Action<Transform> onComplete )
 		{
@@ -245,7 +245,7 @@ public class GoKitLite : MonoBehaviour
 
 
 		/// <summary>
-		/// chainable. set the loop type for the tween
+		/// chainable. set the loop type for the tween. do not store a reference to the tween!
 		/// </summary>
 		public Tween setLoopType( LoopType loopType, int loops = 1 )
 		{
@@ -378,12 +378,13 @@ public class GoKitLite : MonoBehaviour
 	
 	#region Public
 	
-	public Tween positionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
+	public Tween positionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Position );
 		tween.delay = delay;
 		tween.targetVector = targetPosition;
 		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
 		tween.prepareForUse();
 		
 		_activeTweens.Add( tween );
@@ -392,21 +393,22 @@ public class GoKitLite : MonoBehaviour
 	}
 	
 	
-	public Tween positionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
+	public Tween positionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var currentPosition = trans.position;
 		trans.position = targetPosition;
 
-		return positionTo( trans, duration, currentPosition, delay, easeFunction );
+		return positionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
 	}
 		
 	
-	public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
+	public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.LocalPosition );
 		tween.delay = delay;
 		tween.targetVector = targetPosition;
 		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
 		tween.prepareForUse();
 		
 		_activeTweens.Add( tween );
@@ -415,20 +417,21 @@ public class GoKitLite : MonoBehaviour
 	}
 
 
-	public Tween localPositionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null )
+	public Tween localPositionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var currentPosition = trans.localPosition;
 		trans.localPosition = targetPosition;
 
-		return localPositionTo( trans, duration, currentPosition, delay, easeFunction );
+		return localPositionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
 	}
 	
 	
-	public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null )
+	public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Scale );
 		tween.targetVector = targetScale;
 		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
 		tween.prepareForUse();
 
 		_activeTweens.Add( tween );
@@ -437,20 +440,21 @@ public class GoKitLite : MonoBehaviour
 	}
 
 
-	public Tween scaleFrom( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null )
+	public Tween scaleFrom( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var currentScale = trans.localScale;
 		trans.localScale = targetScale;
 
-		return scaleTo( trans, duration, currentScale, delay, easeFunction );
+		return scaleTo( trans, duration, currentScale, delay, easeFunction, isRelativeTween );
 	}
 
 
-	public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Rotation );
 		tween.targetVector = targetEulers;
 		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
 		tween.prepareForUse();
 
 		_activeTweens.Add( tween );
@@ -459,20 +463,21 @@ public class GoKitLite : MonoBehaviour
 	}
 
 
-	public Tween rotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	public Tween rotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var currentEulers = trans.eulerAngles;
 		trans.eulerAngles = targetEulers;
 
-		return rotationTo( trans, duration, currentEulers, delay, easeFunction );
+		return rotationTo( trans, duration, currentEulers, delay, easeFunction, isRelativeTween );
 	}
 
 
-	public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.LocalRotation );
 		tween.targetVector = targetEulers;
 		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
 		tween.prepareForUse();
 
 		_activeTweens.Add( tween );
@@ -481,12 +486,36 @@ public class GoKitLite : MonoBehaviour
 	}
 
 
-	public Tween localRotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null )
+	public Tween localRotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
 		var currentEulers = trans.localEulerAngles;
 		trans.localEulerAngles = targetEulers;
 
-		return localRotationTo( trans, duration, currentEulers, delay, easeFunction );
+		return localRotationTo( trans, duration, currentEulers, delay, easeFunction, isRelativeTween );
+	}
+
+
+	public Tween colorTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+	{
+		var tween = nextAvailableTween( trans, duration, TweenType.Color );
+		tween.delay = delay;
+		tween.targetColor = targetColor;
+		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
+		tween.prepareForUse();
+
+		_activeTweens.Add( tween );
+
+		return tween;
+	}
+
+
+	public Tween colorFrom( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+	{
+		var currentColor = trans.renderer.material.color;
+		trans.renderer.material.color = targetColor;
+
+		return colorTo( trans, duration, currentColor, delay, easeFunction, isRelativeTween );
 	}
 
 
@@ -500,29 +529,6 @@ public class GoKitLite : MonoBehaviour
 		_activeTweens.Add( tween );
 
 		return tween;
-	}
-
-
-	public Tween colorTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null )
-	{
-		var tween = nextAvailableTween( trans, duration, TweenType.Color );
-		tween.delay = delay;
-		tween.targetColor = targetColor;
-		tween.easeFunction = easeFunction;
-		tween.prepareForUse();
-
-		_activeTweens.Add( tween );
-
-		return tween;
-	}
-
-
-	public Tween colorFrom( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null )
-	{
-		var currentColor = trans.renderer.material.color;
-		trans.renderer.material.color = targetColor;
-
-		return colorTo( trans, duration, currentColor, delay, easeFunction );
 	}
 
 
