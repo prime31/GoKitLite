@@ -32,6 +32,16 @@ GoKitLite also has a tween queue system to setup a series of tweens that will al
     	.setCompletionHandler( () => { Debug.Log( "Position and Rotation Queue Done" ); } )
     	.start();
 
+Building on the tween queue system there is also a tween flow system. TweenFlows let you setup a timeline of tweens each with a specific start time. Unlike TweenQueues, tweens in a TweenFlow can be running simultaneously. Here is an example of a position tween that has 4 rotation tweens applied while it is still in transit to it's final position. Note that the start method must be called as a coroutine:
+
+    var flow = new GoKitLite.TweenFlow().add( 0, () => { return GoKitLite.instance.positionTo( cube, 5f, new Vector3( 10, 10, 10 ) ); } )
+    	.add( 1f, () => { return GoKitLite.instance.rotationTo( cube, 0.5f, new Vector3( 90, 0, 0 ) ); } )
+    	.add( 2f, () => { return GoKitLite.instance.rotationTo( cube, 0.5f, new Vector3( 0, 90, 0 ) ); } )
+    	.add( 3f, () => { return GoKitLite.instance.rotationTo( cube, 0.5f, new Vector3( 0, 0, 90 ) ); } )
+    	.add( 4f, () => { return GoKitLite.instance.rotationTo( cube, 0.5f, new Vector3( 180, 180, 180 ) ); } )
+    	.setCompletionHandler( () => { Debug.Log( "All done with the position/rotation flow" ); } );
+    StartCoroutine( flow.start() );
+
 
 What about GoKit?
 =========
