@@ -349,42 +349,20 @@ public class GoKitLite : MonoBehaviour
 
 	
 	private List<Tween> _activeTweens = new List<Tween>( 1500 );
-	private Queue<Tween> _tweenQueue;
+	private Stack<Tween> _inactiveTweenStack = new Stack<Tween>();
 	private int _tweenIdCounter = 0;
 
 	public static EaseFunction defaultEaseFunction = GoKitLiteEasing.Quartic.EaseIn;
-	
-	// only one GoKitLite can exist
-	static GoKitLite _instance = null;
-	public static GoKitLite instance
-	{
-		get
-		{
-			if( !_instance )
-			{
-				// check if there is a GO instance already available in the scene graph
-				_instance = FindObjectOfType( typeof( GoKitLite ) ) as GoKitLite;
 
-				// nope, create a new one
-				if( !_instance )
-				{
-					var obj = new GameObject( "GoKitLite" );
-					_instance = obj.AddComponent<GoKitLite>();
-					_instance._tweenQueue = new Queue<Tween>();
-					DontDestroyOnLoad( obj );
-				}
-			}
-
-			return _instance;
-		}
-	}
+	// holds the singleton instance. note that this is not an enforced singleton.
+	public static GoKitLite instance;
 	
 	
 	#region MonoBehaviour
 	
 	private void OnApplicationQuit()
 	{
-		_instance = null;
+		instance = null;
 		Destroy( gameObject );
 	}
 	
@@ -414,8 +392,8 @@ public class GoKitLite : MonoBehaviour
 	private Tween nextAvailableTween( Transform trans, float duration, TweenType tweenType )
 	{
 		Tween tween = null;
-		if( _tweenQueue.Count > 0 )
-			tween = _tweenQueue.Dequeue();
+		if( _inactiveTweenStack.Count > 0 )
+			tween = _inactiveTweenStack.Pop();
 		else
 			tween = new Tween();
 		
@@ -432,7 +410,7 @@ public class GoKitLite : MonoBehaviour
 	{
 		_activeTweens.RemoveAt( index );
 		tween.reset();
-		_tweenQueue.Enqueue( tween );
+		_inactiveTweenStack.Push( tween );
 	}
 	
 	#endregion
@@ -598,6 +576,23 @@ public class GoKitLite : MonoBehaviour
 
 
 	#region Tween Management
+
+	public static void init()
+	{
+		if( !instance )
+		{
+			// check if there is a GoKitLite instance already available in the scene graph before creating one
+			instance = FindObjectOfType( typeof( GoKitLite ) ) as GoKitLite;
+
+			if( !instance )
+			{
+				var obj = new GameObject( "GoKitLite" );
+				instance = obj.AddComponent<GoKitLite>();
+				DontDestroyOnLoad( obj );
+			}
+		}
+	}
+
 
 	/// <summary>
 	/// stops the tween optionally bringing it to its final value first. returns true if the tween was found and stopped.
