@@ -10,6 +10,9 @@ public class SimpleTweenUI : MonoBehaviour
 	
 	void Start()
 	{
+		// prep the GoKitLite object first
+		GoKitLite.init();
+
 		// start it off with our cube friend coming into view
 		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ), 0.5f );
 	}

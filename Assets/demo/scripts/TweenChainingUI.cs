@@ -7,7 +7,13 @@ using System.Collections.Generic;
 public class TweenChainingUI : MonoBehaviour
 {
 	public Transform cube;
-	
+
+
+	void Awake()
+	{
+		GoKitLite.init();
+	}
+
 
 	void OnGUI()
 	{

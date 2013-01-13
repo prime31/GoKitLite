@@ -12,9 +12,11 @@ public class StressTestGUI : MonoBehaviour
 	private float _timeY;
 	private float _timeZ;
 	
-	
+
 	void Start()
 	{
+		// prep the GoKitLite object first
+		GoKitLite.init();
 		Application.targetFrameRate = 60;
 
 		for( var i = 0; i < _cubes.Length; i++ )
