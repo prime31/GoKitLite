@@ -19,6 +19,7 @@ public class StressTestGUI : MonoBehaviour
 		GoKitLite.init();
 		Application.targetFrameRate = 60;
 
+		// original stress test algorithm (flying perlin cubes) adapted from LeanTweens comparison demo
 		for( var i = 0; i < _cubes.Length; i++ )
 		{
 			var cube = GameObject.CreatePrimitive( PrimitiveType.Cube );
@@ -42,9 +43,9 @@ public class StressTestGUI : MonoBehaviour
 		{
 			for( var i = 0; i < _cubes.Length; i++ )
 			{
-				_timeX = _updateDelta * 0.1365143f;
-				_timeY = _updateDelta * 0.3365143f;
-				_timeZ = _updateDelta * 2.5564f;
+				_timeX = _updateDelta * 0.15f;
+				_timeY = _updateDelta * 0.3f;
+				_timeZ = _updateDelta * 3.0f;
 				
 				targetPoint.x = _perlinNoiseGenerator.Noise( _timeX ) * 100 + _originalPositions[i].x;
 				targetPoint.y = _perlinNoiseGenerator.Noise( _timeY ) * 100 + _originalPositions[i].y;
