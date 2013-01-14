@@ -14,7 +14,7 @@ public class SimpleTweenUI : MonoBehaviour
 		GoKitLite.init();
 
 		// start it off with our cube friend coming into view
-		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ), 0.5f );
+		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ) );
 	}
 	
 	
@@ -85,7 +85,7 @@ public class SimpleTweenUI : MonoBehaviour
 				color.a = 1 - dt;
 				trans.renderer.material.color = color;
 			};
-			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Back.EaseOut );
+			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
@@ -97,7 +97,8 @@ public class SimpleTweenUI : MonoBehaviour
 				color.a = dt;
 				trans.renderer.material.color = color;
 			};
-			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Back.EaseOut )
+
+			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone )
 				.setCompletionHandler( t =>
 				{
 					Debug.Log( "All done with custom action" );
