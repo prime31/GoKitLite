@@ -504,6 +504,7 @@ public partial class GoKitLite : MonoBehaviour
 	public Tween customAction( Transform trans, float duration, Action<Transform,float> action, float delay = 0, EaseFunction easeFunction = null )
 	{
 		var tween = nextAvailableTween( trans, duration, TweenType.Action );
+		tween.delay = delay;
 		tween.easeFunction = easeFunction;
 		tween.customAction = action;
 		tween.prepareForUse();
