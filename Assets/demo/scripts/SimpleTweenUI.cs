@@ -77,7 +77,7 @@ public class SimpleTweenUI : MonoBehaviour
 		}
 
 
-		if( GUILayout.Button( "Custom Action Tween of Alpha to 0" ) )
+		if( GUILayout.Button( "Custom Action Tween of Alpha to 0 with 1s Delay" ) )
 		{
 			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
@@ -85,7 +85,7 @@ public class SimpleTweenUI : MonoBehaviour
 				color.a = 1 - dt;
 				trans.renderer.material.color = color;
 			};
-			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 1.0f, GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
