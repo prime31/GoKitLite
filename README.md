@@ -42,6 +42,11 @@ Building on the tween queue system there is also a tween flow system. TweenFlows
     	.setCompletionHandler( () => { Debug.Log( "All done with the position/rotation flow" ); } );
     StartCoroutine( flow.start() );
 
+GoKitActions
+=========
+GoKitActions is an optional class that contains additional actions that can be used with GoKitLite's customAction() method:
+
+    GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakePosition(cube, 0.6f), 0, GoKitLiteEasing.Linear.EaseNone );
 
 What about GoKit?
 =========
