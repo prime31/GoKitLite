@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 
 
-
 public class SimpleTweenUI : MonoBehaviour
 {
 	public Transform cube;
@@ -20,8 +19,6 @@ public class SimpleTweenUI : MonoBehaviour
 	
 	void OnGUI()
 	{
-		//GUI.matrix = Matrix4x4.Scale( new Vector3( 2, 2, 2 ) );
-		
 		if( GUILayout.Button( "Position Tween with 1s Delay and PingPong Loop" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 5, 0 ), 1f, GoKitLiteEasing.Bounce.EaseOut )
@@ -77,7 +74,6 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Custom Action Tween of Alpha to 0 with 1s Delay" ) )
 		{
-			//trans
 			//dt 0 to 1 (except for bouce, punch they go a bit less than 0 and a bit more than 1)
 			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
@@ -100,9 +96,9 @@ public class SimpleTweenUI : MonoBehaviour
 
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone )
 				.setCompletionHandler( t =>
-				{
-					Debug.Log( "All done with custom action" );
-				});
+			{
+				Debug.Log( "All done with custom action" );
+			} );
 		}
 
 
@@ -116,34 +112,32 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.blue )
 				.setCompletionHandler( trans =>
-				{
-					GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.red )
+			{
+				GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.red )
 						.setCompletionHandler( tran =>
-						{
-							GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.green ).setLoopType( GoKitLite.LoopType.PingPong, 10 );
-						});
-				});
+				{
+					GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.green ).setLoopType( GoKitLite.LoopType.PingPong, 10 );
+				} );
+			} );
 		}
-			
-//		if( GUILayout.Button( "Shake Position Ramp up/down Tween" ) )
-//		{
-//			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakePositionRamp(cube, 0.6f), 0, GoKitLiteEasing.Linear.EaseNone );
-//		}
-		
+
+
+		if( GUILayout.Button( "Shake Position Ramp up/down Tween" ) )
+		{
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePositionRamp( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
+		}
+
+
 		if( GUILayout.Button( "Shake Position Tween" ) )
 		{
-			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakePosition(cube, 0.6f), 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePosition( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
 		}
-		
+
+
 		if( GUILayout.Button( "Shake Scale Tween" ) )
 		{
-			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakeScale(cube, 0.6f) , 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
 		}
-		
-//		if( GUILayout.Button( "Shake Scale Ramp up/down Tween" ) )
-//		{
-//			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakeScaleRamp(cube, 0.6f) , 0, GoKitLiteEasing.Linear.EaseNone );
-//		}
 
 	}
 
