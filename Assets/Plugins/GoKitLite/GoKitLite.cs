@@ -564,7 +564,7 @@ public partial class GoKitLite : MonoBehaviour
     /// <param name="bringToCompletion">If true, then all active tweens are broght to completion before they are stopped</param>
     public void stopAllTweens( bool bringToCompletion )
     {
-        for ( var i = 0; i < _activeTweens.Count; i++ )
+        for( var i = _activeTweens.Count - 1; i >= 0; --i )
         {
             // send in a delta of float.max if we should be completing this tween before killing it
             if ( bringToCompletion )
