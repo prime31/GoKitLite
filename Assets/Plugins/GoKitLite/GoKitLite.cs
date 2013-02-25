@@ -557,7 +557,38 @@ public partial class GoKitLite : MonoBehaviour
 		
 		return false;
 	}
-	
-	#endregion
-	
+
+    /// <summary>
+    /// Stops all in-progress tweens optionally bringing them to their final values.
+    /// </summary>
+    /// <param name="bringToCompletion">If true, then all active tweens are broght to completion before they are stopped</param>
+    public void stopAllTweens( bool bringToCompletion )
+    {
+        for ( var i = 0; i < _activeTweens.Count; i++ )
+        {
+            // send in a delta of float.max if we should be completing this tween before killing it
+            if ( bringToCompletion )
+                _activeTweens[i].tick( float.MaxValue );
+
+            removeTween( _activeTweens[i], i );
+        }
+    }
+
+    /// <summary>
+    /// Checks if the current tween is active
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>True if the tween is active, false otherwise</returns>
+    public bool isTweenActive ( int id )
+    {
+        for ( var i = 0; i < _activeTweens.Count; i++ )
+        {
+            if ( _activeTweens[i].id == id )
+                return true;
+        }
+
+        return false;
+    }
+
+    #endregion
 }
