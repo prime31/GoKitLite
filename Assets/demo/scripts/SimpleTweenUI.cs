@@ -65,7 +65,6 @@ public class SimpleTweenUI : MonoBehaviour
 			GoKitLite.instance.rotationTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 0, 310, 0 ), 0, GoKitLiteEasing.Back.EaseOut );
 		}
 
-
 		if( GUILayout.Button( "Rotation by 360,0,0 (relative tween)" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, 1, new Vector3( 360f, 0, 0 ), 0, GoKitLiteEasing.Back.EaseOut, true );
@@ -138,7 +137,11 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
 		}
-
+		
+		if( GUILayout.Button( "Stop All tweens" ) )
+		{
+			GoKitLite.instance.stopAllTweens(true);
+		}
 	}
 
 }
