@@ -350,9 +350,13 @@ public partial class GoKitLite : MonoBehaviour
 
 	private void removeTween( Tween tween, int index )
 	{
-		_activeTweens.RemoveAt( index );
-		tween.reset();
-		_inactiveTweenStack.Push( tween );
+        if ( _activeTweens.Contains( tween ) )
+        {
+            _activeTweens.RemoveAt( index );
+
+            tween.reset();
+            _inactiveTweenStack.Push( tween );
+        }
 	}
 	
 	#endregion

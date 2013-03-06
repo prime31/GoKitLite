@@ -6,5 +6,6 @@
 *.csproj
 *.unityproj
 *.sln
+*.pidb
 Xcode
 GoKitLite.userprefs
