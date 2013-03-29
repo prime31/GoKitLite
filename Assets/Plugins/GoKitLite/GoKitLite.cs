@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-
 public partial class GoKitLite : MonoBehaviour
 {
 	#region Internal classes and enums
@@ -30,28 +29,28 @@ public partial class GoKitLite : MonoBehaviour
 		internal Action<Transform> onComplete;
 		internal LoopType loopType;
 		internal int loops = 0;
+		internal Tween nextTween;
 		
 		// tweenable properties: Vector3
 		internal Vector3 targetVector;
 		private Vector3 _startVector;
 		private Vector3 _diffVector;
 
-		// Color
+		// tweenable properties: Color
 		internal Color targetColor;
 		private Color _startColor;
 		private Color _diffColor;
 		private Material _material;
-
 		internal Action<Transform,float> customAction;
 
 		// internal state
 		private float _elapsedTime;
 		private TargetValueType targetValueType;
-		
+
 		
 		internal void reset()
 		{
-			// any pointers or values that are not guarnateed to be set later are defaulted here
+			// any pointers or values that are not guaranteed to be set later are defaulted here
 			transform = null;
 			targetVector = _startVector = _diffVector = Vector3.zero;
 			delay = 0;
@@ -61,6 +60,15 @@ public partial class GoKitLite : MonoBehaviour
 			onComplete = null;
 			customAction = null;
 			_material = null;
+
+			if( nextTween != null )
+			{
+				// null out and return to the stack all additional tweens
+				GoKitLite.instance._inactiveTweenStack.Push( nextTween );
+				nextTween.reset();
+			}
+
+			nextTween = null;
 		}
 
 
@@ -115,7 +123,7 @@ public partial class GoKitLite : MonoBehaviour
 			_elapsedTime = -delay;
 
 			// we have to be careful with rotations because we always want to rotate in the shortest angle so we set the diffValue with that in mind
-			if( targetValueType == TargetValueType.Vector3 && tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation)
+			if( targetValueType == TargetValueType.Vector3 && tweenType != TweenType.Rotation && tweenType != TweenType.LocalRotation )
 			{
 				if( isRelativeTween )
 					_diffVector = targetVector;
@@ -265,17 +273,89 @@ public partial class GoKitLite : MonoBehaviour
 			return id;
 		}
 
+
+		/// <summary>
+		/// adds a vector tween using this tween's Transform and type that will start as soon as this completes
+		/// </summary>
+		public Tween next( float duration, Vector3 targetVector, float delay = 0 )
+		{
+			var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, false );
+			nextTween = tween;
+
+			return tween;
+		}
+
+
+		/// <summary>
+		/// adds a vector tween using this tween's Transform and type that will start as soon as this completes
+		/// </summary>
+		public Tween next( float duration, Vector3 targetVector, float delay, EaseFunction easeFunction, bool isRelativeTween = false )
+		{
+			var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+			nextTween = tween;
+
+			return tween;
+		}
+
+
+		/// <summary>
+		/// adds a tween that will start as soon as this tween completes
+		/// </summary>
+		public Tween next( TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		{
+			var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+			nextTween = tween;
+
+			return tween;
+		}
+
+
+		/// <summary>
+		/// adds a tween that will start as soon as this tween completes
+		/// </summary>
+		public Tween next( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		{
+			var tween = GoKitLite.instance.vectorTweenTo( trans, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+			nextTween = tween;
+
+			return tween;
+		}
+
+
+		/// <summary>
+		/// adds a color tween using this tween's Transform and type that will start as soon as this completes
+		/// </summary>
+		public Tween next( float duration, Color targetColor )
+		{
+			var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, 0, easeFunction, false );
+			nextTween = tween;
+
+			return tween;
+		}
+
+
+		/// <summary>
+		/// adds a color tween using this tween's Transform and type that will start as soon as this completes
+		/// </summary>
+		public Tween next( float duration, Color targetColor, float delay, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		{
+			var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, delay, easeFunction, isRelativeTween );
+			nextTween = tween;
+
+			return tween;
+		}
+
 	}
 
 
-	internal enum TweenType
+	public enum TweenType
 	{
 		Position,
 		LocalPosition,
 		Rotation,
 		LocalRotation,
 		Scale,
-	    Color,
+		Color,
 		Action
 	}
 
@@ -290,13 +370,14 @@ public partial class GoKitLite : MonoBehaviour
 	#endregion
 
 	
-	private List<Tween> _activeTweens = new List<Tween>( 1500 );
-	private Stack<Tween> _inactiveTweenStack = new Stack<Tween>();
+	private List<Tween> _activeTweens = new List<Tween>( 20 );
+	internal Stack<Tween> _inactiveTweenStack = new Stack<Tween>();
 	private int _tweenIdCounter = 0;
-
 	public static EaseFunction defaultEaseFunction = GoKitLiteEasing.Quartic.EaseIn;
 
-	// holds the singleton instance. note that this is not an enforced singleton.
+	/// <summary>
+	/// holds the singleton instance. note that this is not an enforced singleton. you must call init to create it!
+	/// </summary>
 	public static GoKitLite instance;
 	
 	
@@ -307,7 +388,7 @@ public partial class GoKitLite : MonoBehaviour
 		instance = null;
 		Destroy( gameObject );
 	}
-	
+
 	
 	private void Update()
 	{
@@ -321,15 +402,54 @@ public partial class GoKitLite : MonoBehaviour
 			{
 				if( tween.onComplete != null )
 					tween.onComplete( tween.transform );
+
+				// handle nextTween if we have a chain
+				if( tween.nextTween != null )
+				{
+					tween.nextTween.prepareForUse();
+					_activeTweens.Add( tween.nextTween );
+
+					// null out the nextTween so that the reset method doesnt remove it!
+					tween.nextTween = null;
+				}
+
 				removeTween( tween, i );
 			}
 		}
+
+#if UNITY_EDITOR
+		gameObject.name = "GoKitLite. active tweens: " + _activeTweens.Count;
+#endif
 	}
 	
 	#endregion
 	
 	
 	#region Private
+
+	internal Tween vectorTweenTo( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+	{
+		var tween = nextAvailableTween( trans, duration, tweenType );
+		tween.delay = delay;
+		tween.targetVector = targetVector;
+		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
+
+		return tween;
+	}
+
+
+	internal Tween colorTweenTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+	{
+		var tween = nextAvailableTween( trans, duration, TweenType.Color );
+		tween.delay = delay;
+		tween.targetColor = targetColor;
+		tween.easeFunction = easeFunction;
+		tween.isRelativeTween = isRelativeTween;
+
+		return tween;
+	}
+
 	
 	private Tween nextAvailableTween( Transform trans, float duration, TweenType tweenType )
 	{
@@ -346,7 +466,7 @@ public partial class GoKitLite : MonoBehaviour
 		
 		return tween;
 	}
-	
+
 
 	private void removeTween( Tween tween, int index )
 	{
@@ -359,21 +479,17 @@ public partial class GoKitLite : MonoBehaviour
 	
 	
 	#region Public
-	
+
 	public Tween positionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.Position );
-		tween.delay = delay;
-		tween.targetVector = targetPosition;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
+		var tween = vectorTweenTo( trans, TweenType.Position, duration, targetPosition, delay, easeFunction, isRelativeTween );
+
 		tween.prepareForUse();
-		
 		_activeTweens.Add( tween );
-		
+
 		return tween;
 	}
-	
+
 	
 	public Tween positionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
@@ -382,17 +498,13 @@ public partial class GoKitLite : MonoBehaviour
 
 		return positionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
 	}
-		
+
 	
 	public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.LocalPosition );
-		tween.delay = delay;
-		tween.targetVector = targetPosition;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
+		var tween = vectorTweenTo( trans, TweenType.LocalPosition, duration, targetPosition, delay, easeFunction, isRelativeTween );
+
 		tween.prepareForUse();
-		
 		_activeTweens.Add( tween );
 		
 		return tween;
@@ -406,16 +518,13 @@ public partial class GoKitLite : MonoBehaviour
 
 		return localPositionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
 	}
-	
+
 	
 	public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.Scale );
-		tween.targetVector = targetScale;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
-		tween.prepareForUse();
+		var tween = vectorTweenTo( trans, TweenType.Scale, duration, targetScale, delay, easeFunction, isRelativeTween );
 
+		tween.prepareForUse();
 		_activeTweens.Add( tween );
 
 		return tween;
@@ -433,12 +542,9 @@ public partial class GoKitLite : MonoBehaviour
 
 	public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.Rotation );
-		tween.targetVector = targetEulers;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
-		tween.prepareForUse();
+		var tween = vectorTweenTo( trans, TweenType.Rotation, duration, targetEulers, delay, easeFunction, isRelativeTween );
 
+		tween.prepareForUse();
 		_activeTweens.Add( tween );
 
 		return tween;
@@ -456,12 +562,9 @@ public partial class GoKitLite : MonoBehaviour
 
 	public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.LocalRotation );
-		tween.targetVector = targetEulers;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
-		tween.prepareForUse();
+		var tween = vectorTweenTo( trans, TweenType.LocalRotation, duration, targetEulers, delay, easeFunction, isRelativeTween );
 
+		tween.prepareForUse();
 		_activeTweens.Add( tween );
 
 		return tween;
@@ -479,13 +582,9 @@ public partial class GoKitLite : MonoBehaviour
 
 	public Tween colorTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 	{
-		var tween = nextAvailableTween( trans, duration, TweenType.Color );
-		tween.delay = delay;
-		tween.targetColor = targetColor;
-		tween.easeFunction = easeFunction;
-		tween.isRelativeTween = isRelativeTween;
-		tween.prepareForUse();
+		var tween = colorTweenTo( trans, duration, targetColor, delay, easeFunction, isRelativeTween );
 
+		tween.prepareForUse();
 		_activeTweens.Add( tween );
 
 		return tween;
@@ -558,37 +657,37 @@ public partial class GoKitLite : MonoBehaviour
 		return false;
 	}
 
-    /// <summary>
-    /// Stops all in-progress tweens optionally bringing them to their final values.
-    /// </summary>
-    /// <param name="bringToCompletion">If true, then all active tweens are broght to completion before they are stopped</param>
-    public void stopAllTweens( bool bringToCompletion )
-    {
-        for( var i = _activeTweens.Count - 1; i >= 0; --i )
-        {
-            // send in a delta of float.max if we should be completing this tween before killing it
-            if ( bringToCompletion )
-                _activeTweens[i].tick( float.MaxValue );
+	/// <summary>
+	/// Stops all in-progress tweens optionally bringing them to their final values.
+	/// </summary>
+	/// <param name="bringToCompletion">If true, then all active tweens are broght to completion before they are stopped</param>
+	public void stopAllTweens( bool bringToCompletion )
+	{
+		for( var i = _activeTweens.Count - 1; i >= 0; --i )
+		{
+			// send in a delta of float.max if we should be completing this tween before killing it
+			if( bringToCompletion )
+				_activeTweens[i].tick( float.MaxValue );
 
-            removeTween( _activeTweens[i], i );
-        }
-    }
+			removeTween( _activeTweens[i], i );
+		}
+	}
 
-    /// <summary>
-    /// Checks if the current tween is active
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>True if the tween is active, false otherwise</returns>
-    public bool isTweenActive ( int id )
-    {
-        for ( var i = 0; i < _activeTweens.Count; i++ )
-        {
-            if ( _activeTweens[i].id == id )
-                return true;
-        }
+	/// <summary>
+	/// Checks if the current tween is active
+	/// </summary>
+	/// <param name="id"></param>
+	/// <returns>True if the tween is active, false otherwise</returns>
+	public bool isTweenActive( int id )
+	{
+		for( var i = 0; i < _activeTweens.Count; i++ )
+		{
+			if( _activeTweens[i].id == id )
+				return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
     #endregion
 }

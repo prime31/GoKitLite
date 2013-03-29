@@ -10,64 +10,6 @@ using System.Collections.Generic;
 /// </summary>
 public partial class GoKitLite : MonoBehaviour
 {
-	public class TweenQueue
-	{
-		private Queue<System.Func<GoKitLite.Tween>> _queue = new Queue<System.Func<GoKitLite.Tween>>();
-		private System.Action _onComplete;
-		private int _currentlyRunningTweenId;
-	
-	
-		private void onTweenComplete( Transform trans )
-		{
-			runNextTween();
-		}
-	
-	
-		private void runNextTween()
-		{
-			// if there is nothing left in the stack fire the completionHandler and exit
-			if( _queue.Count == 0 )
-			{
-				if( _onComplete != null )
-					_onComplete();
-				return;
-			}
-	
-			var func = _queue.Dequeue();
-			_currentlyRunningTweenId = func().setCompletionHandler( onTweenComplete ).getId();
-		}
-	
-	
-		public TweenQueue add( System.Func<GoKitLite.Tween> actionTween )
-		{
-			_queue.Enqueue( actionTween );
-			return this;
-		}
-	
-	
-		public TweenQueue setCompletionHandler( System.Action onComplete )
-		{
-			_onComplete = onComplete;
-			return this;
-		}
-	
-	
-		public void start()
-		{
-			runNextTween();
-		}
-	
-	
-		public void stop( bool bringCurrentlyRunningTweenToCompletion )
-		{
-			_queue.Clear();
-			GoKitLite.instance.stopTween( _currentlyRunningTweenId, bringCurrentlyRunningTweenToCompletion );
-			runNextTween();
-		}
-	
-	}
-
-
 	public class TweenFlow
 	{
 		/// <summary>
