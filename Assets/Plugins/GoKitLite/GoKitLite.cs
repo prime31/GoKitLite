@@ -33,17 +33,20 @@ namespace Prime31.GoKitLite
 			internal int loops = 0;
 			internal Tween nextTween;
 			
-			// tweenable properties: Vector3
+			// tweenable: Vector3
 			internal Vector3 targetVector;
 			private Vector3 _startVector;
 			private Vector3 _diffVector;
 	
-			// tweenable properties: Color
+			// tweenable: Color
 			internal Color targetColor;
 			private Color _startColor;
 			private Color _diffColor;
 			private Material _material;
+			
+			// tweenable: Action and property
 			internal Action<Transform,float> customAction;
+			internal IGoKitLiteTweenProperty propertyTween;
 	
 			// internal state
 			private float _elapsedTime;
@@ -120,6 +123,10 @@ namespace Prime31.GoKitLite
 					case TweenType.Action:
 						targetValueType = TargetValueType.None;
 						break;
+					case TweenType.Property:
+						targetValueType = TargetValueType.None;
+						propertyTween.prepareForUse();
+						break;
 				}
 				
 				_elapsedTime = -delay;
@@ -162,6 +169,8 @@ namespace Prime31.GoKitLite
 				// special case: Action tweens
 				if( tweenType == TweenType.Action )
 					customAction( transform, easedTime );
+				else if( tweenType == TweenType.Property )
+					propertyTween.tick( easedTime );
 	
 				if( targetValueType == TargetValueType.Vector3 )
 				{
@@ -347,6 +356,22 @@ namespace Prime31.GoKitLite
 				return tween;
 			}
 	
+			
+			/// <summary>
+			/// adds a property tween that will start as soon as the current tween completes
+			/// </summary>
+			public Tween next( float duration, IGoKitLiteTweenProperty newPropertyTween )
+			{
+				var tween = GoKitLite.instance.nextAvailableTween( transform, duration, TweenType.Property );
+				//tween.delay = delay;
+				tween.easeFunction = easeFunction;
+				tween.propertyTween = newPropertyTween;
+
+				nextTween = tween;
+	
+				return tween;
+			}
+
 		}
 	
 	
@@ -358,7 +383,8 @@ namespace Prime31.GoKitLite
 			LocalRotation,
 			Scale,
 			Color,
-			Action
+			Action,
+			Property
 		}
 	
 	
@@ -619,6 +645,19 @@ namespace Prime31.GoKitLite
 			return tween;
 		}
 	
+		
+		public Tween propertyTween( IGoKitLiteTweenProperty propertyTween, float duration, float delay = 0, EaseFunction easeFunction = null )
+		{
+			var tween = nextAvailableTween( this.transform, duration, TweenType.Property );
+			tween.delay = delay;
+			tween.easeFunction = easeFunction;
+			tween.propertyTween = propertyTween;
+
+			tween.prepareForUse();
+			_activeTweens.Add( tween );
+			
+			return tween;
+		}
 	
 		#endregion
 	
@@ -663,6 +702,7 @@ namespace Prime31.GoKitLite
 			return false;
 		}
 	
+		
 		/// <summary>
 		/// Stops all in-progress tweens optionally bringing them to their final values.
 		/// </summary>
@@ -679,6 +719,7 @@ namespace Prime31.GoKitLite
 			}
 		}
 	
+		
 		/// <summary>
 		/// Checks if the current tween is active
 		/// </summary>
@@ -696,5 +737,6 @@ namespace Prime31.GoKitLite
 		}
 	
 	    #endregion
+	
 	}
 }
