@@ -2,13 +2,13 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Prime31.GoKitLite;
 
 
 /// <summary>
-/// totally optional classes for making queues of tweens and tween flows
+/// totally optional classes for making tween flows
 /// </summary>
-public partial class GoKitLite : MonoBehaviour
+namespace Prime31.GoKitLite
 {
 	public class TweenFlow
 	{

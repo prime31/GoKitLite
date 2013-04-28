@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Prime31.GoKitLite;
 
 
 
@@ -58,7 +59,7 @@ public class TweenChainingUI : MonoBehaviour
 				.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 1, 2, -5 ) )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 0, 90, 90 ) )
 				.next( 0.3f, Color.yellow )
-				.next( GoKitLite.TweenType.Scale, 0.8f, new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Linear.Punch )
+				.next( GoKitLite.TweenType.Scale, 0.8f, new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Elastic.Punch )
 				.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 0, 0, 0 ) )
 				.next( 0.3f, Color.blue )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 360, 360, 0 ), 0, null, true )

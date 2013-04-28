@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Prime31.GoKitLite;
 
 
 public class SimpleTweenUI : MonoBehaviour
@@ -44,7 +45,7 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Punch Scale to 3" ) )
 		{
-			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Linear.Punch );
+			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Elastic.Punch );
 		}
 
 
