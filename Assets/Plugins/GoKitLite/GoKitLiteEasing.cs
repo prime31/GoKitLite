@@ -207,7 +207,7 @@ public static class GoKitLiteEasing
 	            return 0;
 	
 	        const float p = 0.3f;
-	        return ( 1 * Mathf.Pow( 2, -10 * t ) * Mathf.Sin( t * ( 2 * Mathf.PI ) / p ) );
+	        return ( Mathf.Pow( 2, -10 * t ) * Mathf.Sin( t * ( 2 * Mathf.PI ) / p ) );
 	    }
 	}
 
