@@ -17,7 +17,11 @@ namespace Prime31.GoKitLite
 		public static T setterForProperty<T>( System.Object targetObject, string propertyName )
 		{
 			// first get the property
+#if NET_CORE
+			var propInfo = targetObject.GetType().GetRuntimeProperty( propertyName );
+#else
 			var propInfo = targetObject.GetType().GetProperty( propertyName );
+#endif
 			
 			if( propInfo == null )
 			{
@@ -25,7 +29,12 @@ namespace Prime31.GoKitLite
 				return default( T );
 			}
 			
+#if NET_CORE
+			// Windows Phone/Store new API
+			return (T)(object)propInfo.SetMethod.CreateDelegate( typeof( T ), targetObject );
+#else
 			return (T)(object)Delegate.CreateDelegate( typeof( T ), targetObject, propInfo.GetSetMethod() );
+#endif
 		}
 		
 		
@@ -36,7 +45,11 @@ namespace Prime31.GoKitLite
 		public static T getterForProperty<T>( System.Object targetObject, string propertyName )
 		{
 			// first get the property
+#if NET_CORE
+			var propInfo = targetObject.GetType().GetRuntimeProperty( propertyName );
+#else
 			var propInfo = targetObject.GetType().GetProperty( propertyName );
+#endif
 			
 			if( propInfo == null )
 			{
@@ -44,11 +57,20 @@ namespace Prime31.GoKitLite
 				return default( T );
 			}
 			
+#if NET_CORE
+			// Windows Phone/Store new API
+			return (T)(object)propInfo.GetMethod.CreateDelegate( typeof( T ), targetObject );
+#else
 			return (T)(object)Delegate.CreateDelegate( typeof( T ), targetObject, propInfo.GetGetMethod() );
+#endif
 		}
+	
 	}
 	
 	
+	/// <summary>
+	/// interface to make working with property tweens easier
+	/// </summary>
 	public interface IGoKitLiteTweenProperty
 	{
 		void prepareForUse();

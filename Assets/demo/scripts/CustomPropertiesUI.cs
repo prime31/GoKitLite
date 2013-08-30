@@ -66,7 +66,7 @@ public class CustomPropertiesUI : MonoBehaviour
 		}
 		
 		
-		if( GUILayout.Button( "Blah" ) )
+		if( GUILayout.Button( "Tween Main Texture Offset" ) )
 		{
 			var prop = new Vector2TweenProperty( cube.renderer.material, "mainTextureOffset", new Vector2( 50, 50 ) );
 			GoKitLite.instance.propertyTween( prop, 60f, 0, GoKitLiteEasing.Linear.EaseNone );
