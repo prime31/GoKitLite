@@ -65,7 +65,7 @@ public class TweenChainingUI : MonoBehaviour
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 360, 360, 0 ), 0, null, true )
 				.next( GoKitLite.TweenType.Scale, 0.8f, new Vector3( 4f, 0.2f, 0.2f ), 0, GoKitLiteEasing.Bounce.EaseOut )
 					.setLoopType( GoKitLite.LoopType.PingPong, 1 )
-				.next( 1.3f, Color.gray, 0.2f );
+				.next( 1.3f, Color.gray, "_Color", 0.2f );
 		}
 	}
 }

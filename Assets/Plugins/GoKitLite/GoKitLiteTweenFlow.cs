@@ -83,7 +83,6 @@ namespace Prime31.GoKitLite
 				{
 					if( elapsedTime >= _tweenFlows[i].startTime )
 					{
-						//
 						var flowItem = _tweenFlows[i];
 						_tweenFlows.RemoveAt( i );
 						_currentlyRunningTweenId = flowItem.actionTween().setCompletionHandler( onTweenComplete ).getId();

@@ -43,6 +43,7 @@ namespace Prime31.GoKitLite
 			private Color _startColor;
 			private Color _diffColor;
 			private Material _material;
+			internal string materialProperty;
 			
 			// tweenable: Action and property
 			internal Action<Transform,float> customAction;
@@ -65,6 +66,7 @@ namespace Prime31.GoKitLite
 				onComplete = null;
 				customAction = null;
 				_material = null;
+				materialProperty = null;
 	
 				if( nextTween != null )
 				{
@@ -142,7 +144,7 @@ namespace Prime31.GoKitLite
 				else if( targetValueType == TargetValueType.Color )
 				{
 					_material = transform.renderer.material;
-					_startColor = _material.color;
+					_startColor = _material.GetColor( materialProperty );
 	
 					if( isRelativeTween )
 						_diffColor = targetColor;
@@ -184,13 +186,13 @@ namespace Prime31.GoKitLite
 				}
 				else if( targetValueType == TargetValueType.Color )
 				{
-					_material.color = new Color
+					_material.SetColor( materialProperty, new Color
 					(
 						_startColor.r + _diffColor.r * easedTime,
 						_startColor.g + _diffColor.g * easedTime,
 						_startColor.b + _diffColor.b * easedTime,
 						_startColor.a + _diffColor.a * easedTime
-					);
+					) );
 				}
 	
 				// if we have a loopType and we are done implement it
@@ -212,7 +214,7 @@ namespace Prime31.GoKitLite
 					if( targetValueType == TargetValueType.Vector3 )
 						setVectorAsRequiredPerCurrentTweenType( ref _startVector );
 					else if( targetValueType == TargetValueType.Color )
-						_material.color = _startColor;
+						_material.SetColor( materialProperty, _startColor );
 				}
 				else // ping-pong
 				{
@@ -338,7 +340,7 @@ namespace Prime31.GoKitLite
 			/// </summary>
 			public Tween next( float duration, Color targetColor )
 			{
-				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, 0, easeFunction, false );
+				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, "_Color", 0, easeFunction, false );
 				nextTween = tween;
 	
 				return tween;
@@ -348,9 +350,9 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// adds a color tween using this tween's Transform and type that will start as soon as this completes
 			/// </summary>
-			public Tween next( float duration, Color targetColor, float delay, EaseFunction easeFunction = null, bool isRelativeTween = false )
+			public Tween next( float duration, Color targetColor, string materialProperty, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 			{
-				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, delay, easeFunction, isRelativeTween );
+				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, materialProperty, delay, easeFunction, isRelativeTween );
 				nextTween = tween;
 	
 				return tween;
@@ -467,11 +469,12 @@ namespace Prime31.GoKitLite
 		}
 	
 	
-		internal Tween colorTweenTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		internal Tween colorTweenTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 		{
 			var tween = nextAvailableTween( trans, duration, TweenType.Color );
 			tween.delay = delay;
 			tween.targetColor = targetColor;
+			tween.materialProperty = materialProperty;
 			tween.easeFunction = easeFunction;
 			tween.isRelativeTween = isRelativeTween;
 	
@@ -612,9 +615,9 @@ namespace Prime31.GoKitLite
 		}
 	
 	
-		public Tween colorTo( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween colorTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 		{
-			var tween = colorTweenTo( trans, duration, targetColor, delay, easeFunction, isRelativeTween );
+			var tween = colorTweenTo( trans, duration, targetColor, materialProperty, delay, easeFunction, isRelativeTween );
 	
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -623,12 +626,12 @@ namespace Prime31.GoKitLite
 		}
 	
 	
-		public Tween colorFrom( Transform trans, float duration, Color targetColor, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween colorFrom( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
 		{
-			var currentColor = trans.renderer.material.color;
-			trans.renderer.material.color = targetColor;
+			var currentColor = trans.renderer.material.GetColor( materialProperty );
+			trans.renderer.material.SetColor( materialProperty, targetColor );
 	
-			return colorTo( trans, duration, currentColor, delay, easeFunction, isRelativeTween );
+			return colorTo( trans, duration, currentColor, materialProperty, delay, easeFunction, isRelativeTween );
 		}
 	
 	

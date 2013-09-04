@@ -8,8 +8,7 @@ using System.Collections;
 public static class GoKitLiteActions
 {
 	/// <summary>
-	/// Shakes the position of the given transform at the starting shake intensity
-	/// and decreases until dt = 1 at which point shakeIntensity = 0 and 
+	/// Shakes the position of the given transform at the starting shake intensity and decreases until dt = 1 at which point shakeIntensity = 0 and 
 	/// the transform's position is returned to its original value.
 	/// </summary>
 	/// <returns>
@@ -23,11 +22,11 @@ public static class GoKitLiteActions
 	/// </param>
 	public static System.Action<Transform, float> shakePosition( Transform trans, float shakeIntensity )
 	{
-		Vector3 origPos = trans.position;
+		var origPos = trans.position;
 
 		System.Action<Transform,float> action = ( t, dt ) =>
 		{
-			//Start at full shake intensity and ramp down from there
+			// start at full shake intensity and ramp down from there
 			t.position = origPos + Random.insideUnitSphere * shakeIntensity * ( 1 - dt );
 			
 			if( dt >= 1 )
@@ -53,19 +52,18 @@ public static class GoKitLiteActions
 	/// </param>
 	public static System.Action<Transform, float> shakePositionRamp( Transform trans, float maxShakeIntensity )
 	{
-		//Store original position
-		Vector3 origPos = trans.position;
+		// store original position
+		var origPos = trans.position;
 		
 		System.Action<Transform,float> action = ( t, dt ) =>
 		{
-			//Ramp up
+			// ramp up
 			if( dt < 0.5f )
 				t.position = origPos + Random.insideUnitSphere * maxShakeIntensity * 2 * dt;
-				//Ramp down
-			else
+			else // ramp down
 				t.position = origPos + Random.insideUnitSphere * maxShakeIntensity * 2 * ( 1 - dt );
 				
-			//Return to original position
+			// return to original position
 			if( dt >= 1 )
 				t.position = origPos;
 		};
@@ -89,7 +87,7 @@ public static class GoKitLiteActions
 	/// </param>
 	public static System.Action<Transform, float> shakeScale( Transform trans, float shakeIntensity )
 	{
-		Vector3 origScale = trans.localScale;
+		var origScale = trans.localScale;
 
 		System.Action<Transform,float> action = ( t, dt ) =>
 		{
@@ -120,17 +118,17 @@ public static class GoKitLiteActions
 	public static System.Action<Transform, float> shakeScaleRamp( Transform trans, float maxShakeIntensity )
 	{
 		// store original position
-		Vector3 origScale = trans.localScale;
+		var origScale = trans.localScale;
 		
 		System.Action<Transform,float> action = ( t, dt ) =>
 		{
-			// Ramp up
+			// ramp up
 			if( dt < 0.5f )
 				t.localScale = origScale + Random.insideUnitSphere * maxShakeIntensity * 2 * dt;
-			else // Ramp down
+			else // ramp down
 				t.localScale = origScale + Random.insideUnitSphere * maxShakeIntensity * 2 * ( 1 - dt );
 				
-			// Return to original position
+			// return to original position
 			if( dt >= 1 )
 				t.localScale = origScale;
 		};
