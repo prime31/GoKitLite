@@ -31,14 +31,7 @@ public class CustomPropertiesUI : MonoBehaviour
 			return cube.localScale.y;
 		}
 	}
-	
-	
-	void Start()
-	{
-		// prep the GoKitLite object first
-		GoKitLite.init();
-	}
-	
+
 	
 	void OnGUI()
 	{

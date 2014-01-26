@@ -406,16 +406,36 @@ namespace Prime31.GoKitLite
 		public static EaseFunction defaultEaseFunction = GoKitLiteEasing.Quartic.EaseIn;
 	
 		/// <summary>
-		/// holds the singleton instance. note that this is not an enforced singleton. you must call init to create it!
+		/// holds the singleton instance. creates one on demand if none exists.
 		/// </summary>
-		public static GoKitLite instance;
+		private static GoKitLite _instance;
+		public static GoKitLite instance
+		{
+			get
+			{
+				if( !_instance )
+				{
+					// check if there is a GoKitLite instance already available in the scene graph before creating one
+					_instance = FindObjectOfType( typeof( GoKitLite ) ) as GoKitLite;
+					
+					if( !_instance )
+					{
+						var obj = new GameObject( "GoKitLite" );
+						_instance = obj.AddComponent<GoKitLite>();
+						DontDestroyOnLoad( obj );
+					}
+				}
+
+				return _instance;
+			}
+		}
 		
 		
 		#region MonoBehaviour
 		
 		private void OnApplicationQuit()
 		{
-			instance = null;
+			_instance = null;
 			Destroy( gameObject );
 		}
 	
@@ -666,23 +686,6 @@ namespace Prime31.GoKitLite
 	
 	
 		#region Tween Management
-	
-		public static void init()
-		{
-			if( !instance )
-			{
-				// check if there is a GoKitLite instance already available in the scene graph before creating one
-				instance = FindObjectOfType( typeof( GoKitLite ) ) as GoKitLite;
-	
-				if( !instance )
-				{
-					var obj = new GameObject( "GoKitLite" );
-					instance = obj.AddComponent<GoKitLite>();
-					DontDestroyOnLoad( obj );
-				}
-			}
-		}
-	
 	
 		/// <summary>
 		/// stops the tween optionally bringing it to its final value first. returns true if the tween was found and stopped.

@@ -16,8 +16,6 @@ public class StressTestGUI : MonoBehaviour
 
 	void Start()
 	{
-		// prep the GoKitLite object first
-		GoKitLite.init();
 		Application.targetFrameRate = 60;
 
 		// original stress test algorithm (flying perlin cubes) adapted from LeanTweens comparison demo

@@ -10,12 +10,6 @@ public class TweenChainingUI : MonoBehaviour
 	public Transform cube;
 
 
-	void Awake()
-	{
-		GoKitLite.init();
-	}
-
-
 	void OnGUI()
 	{
 		GUI.matrix = Matrix4x4.Scale( new Vector3( 2, 2, 2 ) );

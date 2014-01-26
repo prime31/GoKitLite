@@ -3,7 +3,7 @@ GoKitLite
 
 GoKitLite is a *crazy* fast tweening library for Unity. It is optimized for mobile with near zero allocations at runtime. GoKitLite can tween position, localPosition, scale, rotation, localRotation and material color. It will tween "to" a value or "from" one to the current value. GoKitLite can also call your own custom Action so that you can tween anything that you want.
 
-GoKitLite usage is dead simple. Below are some examples (note that you need to call GoKitLite.init() before any other methods are valid):
+GoKitLite usage is dead simple. Below are some examples:
 
     // tween the position of an object to 10, 10, 10 over 1 second
     GoKitLite.instance.positionTo( someTransform, 1s, new Vector3( 10, 10, 10 ) );
