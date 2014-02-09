@@ -71,7 +71,7 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Custom Action Tween of Alpha to 0 with 1s Delay" ) )
 		{
-			//dt 0 to 1 (except for bouce, punch they go a bit less than 0 and a bit more than 1)
+			// dt 0 to 1 (except for bouce, punch they go a bit less than 0 and a bit more than 1)
 			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
 				var color = trans.renderer.material.color;
@@ -108,14 +108,9 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Color Cycler" ) )
 		{
 			GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.blue )
-				.setCompletionHandler( trans =>
-			{
-				GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.red )
-						.setCompletionHandler( tran =>
-				{
-					GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.green ).setLoopType( GoKitLite.LoopType.PingPong, 10 );
-				} );
-			} );
+				.next( Random.Range( 0.2f, 1 ), Color.red )
+				.next( Random.Range( 0.2f, 1 ), Color.blue )
+				.setLoopType( GoKitLite.LoopType.PingPong, 10 );
 		}
 
 
@@ -138,7 +133,7 @@ public class SimpleTweenUI : MonoBehaviour
 		
 		if( GUILayout.Button( "Stop All tweens" ) )
 		{
-			GoKitLite.instance.stopAllTweens(true);
+			GoKitLite.instance.stopAllTweens( true );
 		}
 	}
 

@@ -82,7 +82,7 @@ namespace Prime31.GoKitLite
 	/// <summary>
 	/// tweens any float property
 	/// </summary>
-	public class FloatTweenProperty : IGoKitLiteTweenProperty
+	public struct FloatTweenProperty : IGoKitLiteTweenProperty
 	{
 		private Action<float> _setter;
 		private Func<float> _getter;
@@ -98,6 +98,7 @@ namespace Prime31.GoKitLite
 			_getter = Utils.getterForProperty<Func<float>>( target, propertyName );
 			_targetValue = endValue;
 			_isRelative = isRelative;
+			_startValue = _diffValue = 0;
 			
 #if UNITY_EDITOR
 			if( _setter == null || _getter == null )
@@ -128,7 +129,7 @@ namespace Prime31.GoKitLite
 	/// <summary>
 	/// tweens any Vector2 property
 	/// </summary>
-	public class Vector2TweenProperty : IGoKitLiteTweenProperty
+	public struct Vector2TweenProperty : IGoKitLiteTweenProperty
 	{
 		private Action<Vector2> _setter;
 		private Func<Vector2> _getter;
@@ -144,6 +145,7 @@ namespace Prime31.GoKitLite
 			_getter = Utils.getterForProperty<Func<Vector2>>( target, propertyName );
 			_targetValue = endValue;
 			_isRelative = isRelative;
+			_startValue = _diffValue = Vector2.zero;
 			
 #if UNITY_EDITOR
 			if( _setter == null || _getter == null )
@@ -179,7 +181,7 @@ namespace Prime31.GoKitLite
 	/// <summary>
 	/// tweens any Vector3 property
 	/// </summary>
-	public class Vector3TweenProperty : IGoKitLiteTweenProperty
+	public struct Vector3TweenProperty : IGoKitLiteTweenProperty
 	{
 		private Action<Vector3> _setter;
 		private Func<Vector3> _getter;
@@ -195,6 +197,7 @@ namespace Prime31.GoKitLite
 			_getter = Utils.getterForProperty<Func<Vector3>>( target, propertyName );
 			_targetValue = endValue;
 			_isRelative = isRelative;
+			_startValue = _diffValue = Vector3.zero;
 			
 #if UNITY_EDITOR
 			if( _setter == null || _getter == null )
@@ -231,7 +234,7 @@ namespace Prime31.GoKitLite
 	/// <summary>
 	/// tweens any Color property
 	/// </summary>
-	public class ColorTweenProperty : IGoKitLiteTweenProperty
+	public struct ColorTweenProperty : IGoKitLiteTweenProperty
 	{
 		private Action<Color> _setter;
 		private Func<Color> _getter;
@@ -247,6 +250,7 @@ namespace Prime31.GoKitLite
 			_getter = Utils.getterForProperty<Func<Color>>( target, propertyName );
 			_targetValue = endValue;
 			_isRelative = isRelative;
+			_startValue = _diffValue = Color.white;
 			
 #if UNITY_EDITOR
 			if( _setter == null || _getter == null )
