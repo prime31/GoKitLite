@@ -6,6 +6,7 @@ using Prime31.GoKitLite;
 public class SimpleTweenUI : MonoBehaviour
 {
 	public Transform cube;
+	public AnimationCurve easeCurve;
 	
 	
 	void Start()
@@ -27,6 +28,13 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 1, 0, 0 ), 0, GoKitLiteEasing.Cubic.EaseIn, true );
 		}
+
+
+		if( GUILayout.Button( "AnimationCurve for Easing Scale" ) )
+		{
+			GoKitLite.instance.scaleTo( cube, 2f, new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Custom.AnimationCurveEase( easeCurve ) );
+		}
+
 		
 		if( GUILayout.Button( "Scale to 2" ) )
 		{
@@ -130,7 +138,8 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
 		}
-		
+
+
 		if( GUILayout.Button( "Stop All tweens" ) )
 		{
 			GoKitLite.instance.stopAllTweens( true );

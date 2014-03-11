@@ -1,9 +1,34 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 
 public static class GoKitLiteEasing
 {
+	public static class Custom
+	{
+		/// <summary>
+		/// uses an AnimationCurve for easing. the curve should have a start time of 0. The end time can be anything since
+		/// it will be scaled but it is usually easiest to just use the 0 - 1 time range.
+		/// </summary>
+		/// <returns>The curve ease.</returns>
+		/// <param name="curve">Curve.</param>
+		public static Func<float,float,float> AnimationCurveEase( AnimationCurve curve )
+		{
+			// we need the curves totaly duration so we can scale it to the actual tweens duration
+			var curveDuration = curve.keys[curve.length - 1].time;
+
+			Func<float,float,float> func = ( t, d ) =>
+			{
+				var timeScaler = curveDuration / d;
+				return curve.Evaluate( timeScaler * t );
+			};
+
+			return func;
+		}
+	}
+
+
 	public static class Linear
 	{
 		public static float EaseNone( float t, float d )
