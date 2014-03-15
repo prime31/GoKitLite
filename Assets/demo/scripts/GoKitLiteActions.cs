@@ -8,7 +8,7 @@ using System.Collections;
 public static class GoKitLiteActions
 {
 	/// <summary>
-	/// Shakes the position of the given transform at the starting shake intensity and decreases until dt = 1 at which point shakeIntensity = 0 and 
+	/// Shakes the position of the given transform at the starting shake intensity and decreases until dt = 1 at which point shakeIntensity = 0 and
 	/// the transform's position is returned to its original value.
 	/// </summary>
 	/// <returns>
@@ -38,7 +38,7 @@ public static class GoKitLiteActions
 
 	/// <summary>
 	/// Ramps up the shake intensity until it reaches the specified value (occurs at dt = 0.5f) at which
-	/// point the shake intensity ramps back down to 0 and the transform's position is returned to its 
+	/// point the shake intensity ramps back down to 0 and the transform's position is returned to its
 	/// original value.
 	/// </summary>
 	/// <returns>
@@ -73,7 +73,7 @@ public static class GoKitLiteActions
 
 	/// <summary>
 	/// Shakes the scale of the given transform at the starting shake intensity
-	/// and decreases until dt = 1 at which point shakeIntensity = 0 and 
+	/// and decreases until dt = 1 at which point shakeIntensity = 0 and
 	/// the transform's scale is returned to its original value.
 	/// </summary>
 	/// <returns>
@@ -103,7 +103,7 @@ public static class GoKitLiteActions
 
 	/// <summary>
 	/// Ramps up the shake intensity until it reaches the specified value (occurs at dt = 0.5f) at which
-	/// point the shake intensity ramps back down to 0 and the transform's scale is returned to its 
+	/// point the shake intensity ramps back down to 0 and the transform's scale is returned to its
 	/// original value.
 	/// </summary>
 	/// <returns>

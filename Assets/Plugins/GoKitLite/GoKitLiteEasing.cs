@@ -260,7 +260,7 @@ public static class GoKitLiteEasing
 				return 1;
 
 			if( ( t /= d / 2 ) < 1 )
-			{ 
+			{
 				return 0.5f * Mathf.Pow( 2, 10 * ( t - 1 ) );
 			}
 			return 0.5f * ( -Mathf.Pow( 2, -10 * --t ) + 2 );
