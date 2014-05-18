@@ -7,23 +7,24 @@ public class SimpleTweenUI : MonoBehaviour
 {
 	public Transform cube;
 	public AnimationCurve easeCurve;
-	
-	
+
+
 	void Start()
 	{
 		// start it off with our cube friend coming into view
 		GoKitLite.instance.positionFrom( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 10, 0 ) );
 	}
-	
-	
+
+
 	void OnGUI()
 	{
 		if( GUILayout.Button( "Position Tween with 1s Delay and PingPong Loop" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 5, 0 ), 1f, GoKitLiteEasing.Bounce.EaseOut )
-				.setLoopType( GoKitLite.LoopType.PingPong, 3 );
+				.setLoopType( GoKitLite.LoopType.PingPong, 2 )
+				.setLoopCompletionHandler( t => Debug.Log( "Loop iteration done" ) );
 		}
-		
+
 		if( GUILayout.Button( "Relative Position Tween" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 1, 0, 0 ), 0, GoKitLiteEasing.Cubic.EaseIn, true );
@@ -35,13 +36,13 @@ public class SimpleTweenUI : MonoBehaviour
 			GoKitLite.instance.scaleTo( cube, 2f, new Vector3( 3, 3, 3 ), 0, GoKitLiteEasing.Custom.AnimationCurveEase( easeCurve ) );
 		}
 
-		
+
 		if( GUILayout.Button( "Scale to 2" ) )
 		{
 			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 2, 2, 2 ) );
 		}
-		
-		
+
+
 		if( GUILayout.Button( "Scale to 0.5" ) )
 		{
 			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 0.5f, 0.5f, 0.5f ), 0, GoKitLiteEasing.Bounce.EaseOut );
