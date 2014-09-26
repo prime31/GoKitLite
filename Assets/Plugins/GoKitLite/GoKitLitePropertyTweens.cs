@@ -276,8 +276,8 @@ namespace Prime31.GoKitLite
 			(
 				_startValue.r + _diffValue.r * easedTime,
             	_startValue.g + _diffValue.g * easedTime,
-            	_startValue.b + _diffValue.b * easedTime
-			);
+            	_startValue.b + _diffValue.b * easedTime,
+				_startValue.a + _diffValue.a * easedTime);
 			_setter( vec );
 		}
 
