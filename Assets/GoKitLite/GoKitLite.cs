@@ -24,8 +24,11 @@ namespace Prime31.GoKitLite
 			internal int id;
 			internal Transform transform;
 			internal TweenType tweenType;
+			internal bool isTimeScaleIndependent;
+			internal bool isRunningInReverse;
 			internal float duration;
 			internal float delay;
+			internal float delayBetweenLoops;
 			internal EaseFunction easeFunction;
 			internal bool isRelativeTween;
 			internal Action<Transform> onComplete;
@@ -60,7 +63,8 @@ namespace Prime31.GoKitLite
 				// any pointers or values that are not guaranteed to be set later are defaulted here
 				transform = null;
 				targetVector = _startVector = _diffVector = Vector3.zero;
-				delay = 0;
+				delay = delayBetweenLoops = 0f;
+				isTimeScaleIndependent = isRunningInReverse = false;
 				loopType = LoopType.None;
 				easeFunction = null;
 				isRelativeTween = false;
@@ -158,8 +162,11 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// handles the tween. returns true if it is complete and ready for removal
 			/// </summary>
-			internal bool tick( float deltaTime )
+			internal bool tick( bool completeTweenThisStep = false )
 			{
+				// fetch our deltaTime. It will either be taking this to completion or standard delta/unscaledDelta
+				var deltaTime = completeTweenThisStep ? float.MaxValue : ( isTimeScaleIndependent ? Time.unscaledDeltaTime : Time.deltaTime );
+
 				// add deltaTime to our elapsed time and clamp it from -delay to duration
 				_elapsedTime = Mathf.Clamp( _elapsedTime + deltaTime, -delay, duration );
 
@@ -167,7 +174,8 @@ namespace Prime31.GoKitLite
 				if( _elapsedTime <= 0 )
 					return false;
 
-				var easedTime = easeFunction( _elapsedTime, duration );
+				var blah = isRunningInReverse ? duration - _elapsedTime : _elapsedTime;
+				var easedTime = easeFunction( blah, duration );
 
 				// special case: Action tweens
 				if( tweenType == TweenType.Action )
@@ -196,7 +204,7 @@ namespace Prime31.GoKitLite
 					) );
 				}
 
-				// if we have a loopType and we are done implement it
+				// if we have a loopType and we are done do the loop
 				if( loopType != GoKitLite.LoopType.None && _elapsedTime == duration )
 					handleLooping();
 
@@ -219,8 +227,7 @@ namespace Prime31.GoKitLite
 				}
 				else // ping-pong
 				{
-					targetVector = _startVector;
-					targetColor = _startColor;
+					isRunningInReverse = true;
 				}
 
 				if( loopType == GoKitLite.LoopType.RestartFromBeginning || loops % 2 == 1 )
@@ -233,7 +240,7 @@ namespace Prime31.GoKitLite
 				if( loops == 0 )
 					loopType = GoKitLite.LoopType.None;
 
-				delay = 0;
+				delay = delayBetweenLoops;
 				prepareForUse();
 			}
 
@@ -265,6 +272,16 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
+			/// reverses the current tween. if it was going forward it will be going backwards and vice versa.
+			/// </summary>
+			internal void reverseTween()
+			{
+				isRunningInReverse = !isRunningInReverse;
+				_elapsedTime = duration - _elapsedTime;
+			}
+
+
+			/// <summary>
 			/// chainable. sets the action that should be called when the tween is complete. do not store a reference to the tween!
 			/// </summary>
 			public Tween setCompletionHandler( Action<Transform> onComplete )
@@ -288,16 +305,28 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
-			/// chainable. set the loop type for the tween. do not store a reference to the tween!
+			/// chainable. set the loop type for the tween. a single pingpong loop means going from start-finish-start.
 			/// </summary>
-			public Tween setLoopType( LoopType loopType, int loops = 1 )
+			public Tween setLoopType( LoopType loopType, int loops = 1, float delayBetweenLoops = 0f )
 			{
 				this.loopType = loopType;
+				this.delayBetweenLoops = delayBetweenLoops;
 
 				// double the loop count for ping-pong
 				if( loopType == LoopType.PingPong )
 					loops = loops * 2 - 1;
 				this.loops = loops;
+				return this;
+			}
+
+
+			/// <summary>
+			/// sets the tween to be time scale independent
+			/// </summary>
+			/// <returns>The Tween</returns>
+			public Tween setTimeScaleIndependent()
+			{
+				isTimeScaleIndependent = true;
 				return this;
 			}
 
@@ -466,13 +495,11 @@ namespace Prime31.GoKitLite
 
 		private void Update()
 		{
-			var dt = Time.deltaTime;
-
 			// loop backwards so we can remove completed tweens
 			for( var i = _activeTweens.Count - 1; i >= 0; --i )
 			{
 				var tween = _activeTweens[i];
-				if( tween.transform == null || tween.tick( dt ) )
+				if( tween.transform == null || tween.tick() )
 				{
 					if( tween.onComplete != null )
 						tween.onComplete( tween.transform );
@@ -722,7 +749,7 @@ namespace Prime31.GoKitLite
 				{
 					// send in a delta of float.max if we should be completing this tween before killing it
 					if( bringToCompletion )
-						_activeTweens[i].tick( float.MaxValue );
+						_activeTweens[i].tick( true );
 
 					removeTween( _activeTweens[i], i );
 					return true;
@@ -743,7 +770,7 @@ namespace Prime31.GoKitLite
 			{
 				// send in a delta of float.max if we should be completing this tween before killing it
 				if( bringToCompletion )
-					_activeTweens[i].tick( float.MaxValue );
+					_activeTweens[i].tick( true );
 
 				removeTween( _activeTweens[i], i );
 			}
@@ -761,6 +788,26 @@ namespace Prime31.GoKitLite
 			{
 				if( _activeTweens[i].id == id )
 					return true;
+			}
+
+			return false;
+		}
+
+
+		/// <summary>
+		/// reverses the tween. if it was going forward it will be going backwards and vice versa.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns>True if the tween is active, false otherwise</returns>
+		private bool reverseTween( int id )
+		{
+			for( var i = 0; i < _activeTweens.Count; i++ )
+			{
+				if( _activeTweens[i].id == id )
+				{
+					_activeTweens[i].reverseTween();
+					return true;
+				}
 			}
 
 			return false;
