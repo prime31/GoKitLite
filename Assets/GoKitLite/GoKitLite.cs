@@ -454,7 +454,7 @@ namespace Prime31.GoKitLite
 
 
 		private List<Tween> _activeTweens = new List<Tween>( 20 );
-		internal Stack<Tween> _inactiveTweenStack = new Stack<Tween>();
+		internal Stack<Tween> _inactiveTweenStack = new Stack<Tween>( 20 );
 		private int _tweenIdCounter = 0;
 		public static EaseFunction defaultEaseFunction = GoKitLiteEasing.Quartic.EaseIn;
 
@@ -572,13 +572,10 @@ namespace Prime31.GoKitLite
 
 		private void removeTween( Tween tween, int index )
 		{
-	        if ( _activeTweens.Contains( tween ) )
-	        {
-	            _activeTweens.RemoveAt( index );
+            _activeTweens.RemoveAt( index );
 
-	            tween.reset();
-	            _inactiveTweenStack.Push( tween );
-	        }
+            tween.reset();
+            _inactiveTweenStack.Push( tween );
 		}
 
 		#endregion
