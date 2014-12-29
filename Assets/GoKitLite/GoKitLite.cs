@@ -174,8 +174,8 @@ namespace Prime31.GoKitLite
 				if( _elapsedTime <= 0 )
 					return false;
 
-				var blah = isRunningInReverse ? duration - _elapsedTime : _elapsedTime;
-				var easedTime = easeFunction( blah, duration );
+				var modifiedElapsedTime = isRunningInReverse ? duration - _elapsedTime : _elapsedTime;
+				var easedTime = easeFunction( modifiedElapsedTime, duration );
 
 				// special case: Action tweens
 				if( tweenType == TweenType.Action )

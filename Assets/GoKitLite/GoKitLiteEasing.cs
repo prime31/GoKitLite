@@ -17,7 +17,7 @@ namespace Prime31.GoKitLite
 			/// <param name="curve">Curve.</param>
 			public static Func<float,float,float> AnimationCurveEase( AnimationCurve curve )
 			{
-				// we need the curves total duration so we can scale it to the actual tweens duration
+				// we need the curve's total duration so we can scale it to the actual tween's duration
 				var curveDuration = curve.keys[curve.length - 1].time;
 
 				Func<float,float,float> func = ( t, d ) =>
