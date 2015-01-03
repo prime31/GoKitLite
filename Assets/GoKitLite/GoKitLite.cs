@@ -224,10 +224,12 @@ namespace Prime31.GoKitLite
 						setVectorAsRequiredPerCurrentTweenType( ref _startVector );
 					else if( targetValueType == TargetValueType.Color )
 						_material.SetColor( materialProperty, _startColor );
+
+					prepareForUse();
 				}
 				else // ping-pong
 				{
-					isRunningInReverse = true;
+					isRunningInReverse = !isRunningInReverse;
 				}
 
 				if( loopType == GoKitLite.LoopType.RestartFromBeginning || loops % 2 == 1 )
@@ -241,7 +243,7 @@ namespace Prime31.GoKitLite
 					loopType = GoKitLite.LoopType.None;
 
 				delay = delayBetweenLoops;
-				prepareForUse();
+				_elapsedTime = -delay;
 			}
 
 
@@ -282,6 +284,16 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
+			/// chainable. Sets the EaseFunction used by the tween.
+			/// </summary>
+			public Tween setEaseFunction( EaseFunction easeFunction )
+			{
+				this.easeFunction = easeFunction;
+				return this;
+			}
+
+
+			/// <summary>
 			/// chainable. sets the action that should be called when the tween is complete. do not store a reference to the tween!
 			/// </summary>
 			public Tween setCompletionHandler( Action<Transform> onComplete )
@@ -316,6 +328,7 @@ namespace Prime31.GoKitLite
 				if( loopType == LoopType.PingPong )
 					loops = loops * 2 - 1;
 				this.loops = loops;
+
 				return this;
 			}
 

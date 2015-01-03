@@ -18,12 +18,15 @@ public class SimpleTweenUI : MonoBehaviour
 
 	void OnGUI()
 	{
-		if( GUILayout.Button( "Position Tween with 1s Delay and PingPong Loop" ) )
+		if( GUILayout.Button( "Position Tween with PingPong Loop" ) )
 		{
-			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 10, 5, 0 ), 1f, GoKitLiteEasing.Bounce.EaseOut )
+			GoKitLite.instance.positionTo( cube, Random.Range( 1f, 2f ), new Vector3( 10, 5, 0 ) )
+				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
 				.setLoopType( GoKitLite.LoopType.PingPong, 2 )
-				.setLoopCompletionHandler( t => Debug.Log( "Loop iteration done" ) );
+				.setLoopCompletionHandler( t => Debug.Log( "Loop iteration done" ) )
+				.setCompletionHandler( t => Debug.Log( "Tween complete" ) );
 		}
+
 
 		if( GUILayout.Button( "Relative Position Tween" ) )
 		{
@@ -118,8 +121,7 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.colorTo( cube, Random.Range( 0.2f, 1 ), Color.blue )
 				.next( Random.Range( 0.2f, 1 ), Color.red )
-				.next( Random.Range( 0.2f, 1 ), Color.blue )
-				.setLoopType( GoKitLite.LoopType.PingPong, 10 );
+				.setLoopType( GoKitLite.LoopType.PingPong, 2 );
 		}
 
 
