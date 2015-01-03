@@ -51,7 +51,7 @@ namespace Prime31.GoKitLite
 
 			// tweenable: Action and property
 			internal Action<Transform,float> customAction;
-			internal IGoKitLiteTweenProperty propertyTween;
+			internal ITweenable propertyTween;
 
 			// internal state
 			private float _elapsedTime;
@@ -70,6 +70,7 @@ namespace Prime31.GoKitLite
 				isRelativeTween = false;
 				onComplete = onLoopComplete = null;
 				customAction = null;
+				propertyTween = null;
 				_material = null;
 				materialProperty = null;
 
@@ -276,7 +277,7 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// reverses the current tween. if it was going forward it will be going backwards and vice versa.
 			/// </summary>
-			internal void reverseTween()
+			public void reverseTween()
 			{
 				isRunningInReverse = !isRunningInReverse;
 				_elapsedTime = duration - _elapsedTime;
@@ -334,6 +335,16 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
+			/// chainable. sets the delay for the tween.
+			/// </summary>
+			public Tween setDelay( float delay )
+			{
+				this.delay = delay;
+				return this;
+			}
+
+
+			/// <summary>
 			/// sets the tween to be time scale independent
 			/// </summary>
 			/// <returns>The Tween</returns>
@@ -358,7 +369,8 @@ namespace Prime31.GoKitLite
 			/// </summary>
 			public Tween next( float duration, Vector3 targetVector, float delay = 0 )
 			{
-				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, false );
+				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, false );
+				tween.delay = delay;
 				nextTween = tween;
 
 				return tween;
@@ -370,7 +382,8 @@ namespace Prime31.GoKitLite
 			/// </summary>
 			public Tween next( float duration, Vector3 targetVector, float delay, EaseFunction easeFunction, bool isRelativeTween = false )
 			{
-				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, isRelativeTween );
+				tween.delay = delay;
 				nextTween = tween;
 
 				return tween;
@@ -380,9 +393,10 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// adds a tween that will start as soon as this tween completes
 			/// </summary>
-			public Tween next( TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+			public Tween next( TweenType tweenType, float duration, Vector3 targetVector, bool isRelativeTween = false )
 			{
-				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+				var tween = GoKitLite.instance.vectorTweenTo( transform, tweenType, duration, targetVector, isRelativeTween );
+				tween.delay = delay;
 				nextTween = tween;
 
 				return tween;
@@ -392,9 +406,10 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// adds a tween that will start as soon as this tween completes
 			/// </summary>
-			public Tween next( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+			public Tween next( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, bool isRelativeTween = false )
 			{
-				var tween = GoKitLite.instance.vectorTweenTo( trans, tweenType, duration, targetVector, delay, easeFunction, isRelativeTween );
+				var tween = GoKitLite.instance.vectorTweenTo( trans, tweenType, duration, targetVector, isRelativeTween );
+				tween.delay = delay;
 				nextTween = tween;
 
 				return tween;
@@ -406,7 +421,8 @@ namespace Prime31.GoKitLite
 			/// </summary>
 			public Tween next( float duration, Color targetColor )
 			{
-				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, "_Color", 0, easeFunction, false );
+				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, "_Color", false );
+				tween.easeFunction = easeFunction;
 				nextTween = tween;
 
 				return tween;
@@ -414,11 +430,12 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
-			/// adds a color tween using this tween's Transform and type that will start as soon as this completes
+			/// adds a color tween using this tween's Transform that will start as soon as this completes
 			/// </summary>
-			public Tween next( float duration, Color targetColor, string materialProperty, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+			public Tween next( float duration, Color targetColor, string materialProperty, bool isRelativeTween = false )
 			{
-				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, materialProperty, delay, easeFunction, isRelativeTween );
+				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, materialProperty, isRelativeTween );
+				tween.easeFunction = easeFunction;
 				nextTween = tween;
 
 				return tween;
@@ -428,10 +445,9 @@ namespace Prime31.GoKitLite
 			/// <summary>
 			/// adds a property tween that will start as soon as the current tween completes
 			/// </summary>
-			public Tween next( float duration, IGoKitLiteTweenProperty newPropertyTween )
+			public Tween next( float duration, ITweenable newPropertyTween )
 			{
 				var tween = GoKitLite.instance.nextAvailableTween( transform, duration, TweenType.Property );
-				//tween.delay = delay;
 				tween.easeFunction = easeFunction;
 				tween.propertyTween = newPropertyTween;
 
@@ -541,25 +557,21 @@ namespace Prime31.GoKitLite
 
 		#region Private
 
-		internal Tween vectorTweenTo( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		internal Tween vectorTweenTo( Transform trans, TweenType tweenType, float duration, Vector3 targetVector, bool isRelativeTween = false )
 		{
 			var tween = nextAvailableTween( trans, duration, tweenType );
-			tween.delay = delay;
 			tween.targetVector = targetVector;
-			tween.easeFunction = easeFunction;
 			tween.isRelativeTween = isRelativeTween;
 
 			return tween;
 		}
 
 
-		internal Tween colorTweenTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		internal Tween colorTweenTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", bool isRelativeTween = false )
 		{
 			var tween = nextAvailableTween( trans, duration, TweenType.Color );
-			tween.delay = delay;
 			tween.targetColor = targetColor;
 			tween.materialProperty = materialProperty;
-			tween.easeFunction = easeFunction;
 			tween.isRelativeTween = isRelativeTween;
 
 			return tween;
@@ -596,9 +608,9 @@ namespace Prime31.GoKitLite
 
 		#region Public
 
-		public Tween positionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween positionTo( Transform trans, float duration, Vector3 targetPosition, bool isRelativeTween = false )
 		{
-			var tween = vectorTweenTo( trans, TweenType.Position, duration, targetPosition, delay, easeFunction, isRelativeTween );
+			var tween = vectorTweenTo( trans, TweenType.Position, duration, targetPosition, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -607,18 +619,18 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween positionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween positionFrom( Transform trans, float duration, Vector3 targetPosition, bool isRelativeTween = false )
 		{
 			var currentPosition = trans.position;
 			trans.position = targetPosition;
 
-			return positionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
+			return positionTo( trans, duration, currentPosition, isRelativeTween );
 		}
 
 
-		public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween localPositionTo( Transform trans, float duration, Vector3 targetPosition, bool isRelativeTween = false )
 		{
-			var tween = vectorTweenTo( trans, TweenType.LocalPosition, duration, targetPosition, delay, easeFunction, isRelativeTween );
+			var tween = vectorTweenTo( trans, TweenType.LocalPosition, duration, targetPosition, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -627,18 +639,18 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween localPositionFrom( Transform trans, float duration, Vector3 targetPosition, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween localPositionFrom( Transform trans, float duration, Vector3 targetPosition, bool isRelativeTween = false )
 		{
 			var currentPosition = trans.localPosition;
 			trans.localPosition = targetPosition;
 
-			return localPositionTo( trans, duration, currentPosition, delay, easeFunction, isRelativeTween );
+			return localPositionTo( trans, duration, currentPosition, isRelativeTween );
 		}
 
 
-		public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween scaleTo( Transform trans, float duration, Vector3 targetScale, bool isRelativeTween = false )
 		{
-			var tween = vectorTweenTo( trans, TweenType.Scale, duration, targetScale, delay, easeFunction, isRelativeTween );
+			var tween = vectorTweenTo( trans, TweenType.Scale, duration, targetScale, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -647,18 +659,18 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween scaleFrom( Transform trans, float duration, Vector3 targetScale, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween scaleFrom( Transform trans, float duration, Vector3 targetScale, bool isRelativeTween = false )
 		{
 			var currentScale = trans.localScale;
 			trans.localScale = targetScale;
 
-			return scaleTo( trans, duration, currentScale, delay, easeFunction, isRelativeTween );
+			return scaleTo( trans, duration, currentScale, isRelativeTween );
 		}
 
 
-		public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, bool isRelativeTween = false )
 		{
-			var tween = vectorTweenTo( trans, TweenType.Rotation, duration, targetEulers, delay, easeFunction, isRelativeTween );
+			var tween = vectorTweenTo( trans, TweenType.Rotation, duration, targetEulers, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -667,18 +679,18 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween rotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween rotationFrom( Transform trans, float duration, Vector3 targetEulers, bool isRelativeTween = false )
 		{
 			var currentEulers = trans.eulerAngles;
 			trans.eulerAngles = targetEulers;
 
-			return rotationTo( trans, duration, currentEulers, delay, easeFunction, isRelativeTween );
+			return rotationTo( trans, duration, currentEulers, isRelativeTween );
 		}
 
 
-		public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween localRotationTo( Transform trans, float duration, Vector3 targetEulers, bool isRelativeTween = false )
 		{
-			var tween = vectorTweenTo( trans, TweenType.LocalRotation, duration, targetEulers, delay, easeFunction, isRelativeTween );
+			var tween = vectorTweenTo( trans, TweenType.LocalRotation, duration, targetEulers, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -687,18 +699,18 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween localRotationFrom( Transform trans, float duration, Vector3 targetEulers, float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween localRotationFrom( Transform trans, float duration, Vector3 targetEulers, bool isRelativeTween = false )
 		{
 			var currentEulers = trans.localEulerAngles;
 			trans.localEulerAngles = targetEulers;
 
-			return localRotationTo( trans, duration, currentEulers, delay, easeFunction, isRelativeTween );
+			return localRotationTo( trans, duration, currentEulers, isRelativeTween );
 		}
 
 
-		public Tween colorTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween colorTo( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", bool isRelativeTween = false )
 		{
-			var tween = colorTweenTo( trans, duration, targetColor, materialProperty, delay, easeFunction, isRelativeTween );
+			var tween = colorTweenTo( trans, duration, targetColor, materialProperty, isRelativeTween );
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );
@@ -707,12 +719,12 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween colorFrom( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", float delay = 0, EaseFunction easeFunction = null, bool isRelativeTween = false )
+		public Tween colorFrom( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", bool isRelativeTween = false )
 		{
 			var currentColor = trans.renderer.material.GetColor( materialProperty );
 			trans.renderer.material.SetColor( materialProperty, targetColor );
 
-			return colorTo( trans, duration, currentColor, materialProperty, delay, easeFunction, isRelativeTween );
+			return colorTo( trans, duration, currentColor, materialProperty, isRelativeTween );
 		}
 
 
@@ -730,11 +742,9 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween propertyTween( IGoKitLiteTweenProperty propertyTween, float duration, float delay = 0, EaseFunction easeFunction = null )
+		public Tween propertyTween( ITweenable propertyTween, float duration )
 		{
 			var tween = nextAvailableTween( this.transform, duration, TweenType.Property );
-			tween.delay = delay;
-			tween.easeFunction = easeFunction;
 			tween.propertyTween = propertyTween;
 
 			tween.prepareForUse();
