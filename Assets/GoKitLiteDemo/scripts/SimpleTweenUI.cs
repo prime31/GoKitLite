@@ -159,7 +159,7 @@ public class SimpleTweenUI : MonoBehaviour
 
         if (GUILayout.Button("Pause All Tweens"))
         {
-            GoKitLite.instance.setAllTweenPauseState(paused);
+            GoKitLite.instance.setAllTweensPauseState(paused);
             paused = !paused;
         }
 	}

@@ -825,7 +825,7 @@ namespace Prime31.GoKitLite
         /// <summary>
         /// set all in-progress tween's pause state.
         /// </summary>
-        public void setAllTweenPauseState(bool paused)
+        public void setAllTweensPauseState(bool paused)
         {
             for (var i = 0; i < _activeTweens.Count; i++)
             {
@@ -849,6 +849,7 @@ namespace Prime31.GoKitLite
 
 			return false;
 		}
+
 
         /// <summary>
         /// find an active tween with given id, do not store a reference to the tween!
@@ -884,8 +885,6 @@ namespace Prime31.GoKitLite
 			return false;
 		}
 
-
 	    #endregion
-
 	}
 }
