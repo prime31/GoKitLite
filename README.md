@@ -1,7 +1,7 @@
 GoKitLite
 =========
 
-GoKitLite is a *crazy* fast tweening library for Unity. It is optimized for mobile with near zero allocations at runtime. GoKitLite can tween position, localPosition, scale, rotation, localRotation and material color. It will tween "to" a value or "from" one to the current value. GoKitLite can also call your own custom Action so that you can tween anything that you want.
+GoKitLite is a *crazy* fast tweening library for Unity. It is optimized for mobile with near zero allocations at runtime. GoKitLite can tween position, localPosition, scale, rotation, localRotation, material color and any properties (float, Vector2, Vector3 or Color). It will tween "to" a value or "from" one to the current value. GoKitLite can also call your own custom Action so that you can tween anything that you want that isn't supported or isnt a property.
 
 GoKitLite usage is dead simple. Below are some examples:
 
@@ -9,7 +9,8 @@ GoKitLite usage is dead simple. Below are some examples:
     GoKitLite.instance.positionTo( someTransform, 1s, new Vector3( 10, 10, 10 ) );
 
     // tween the rotation of an object to 0, 90, 0 over 0.5 seconds with a custom ease type
-    GoKitLite.instance.rotationTo( someTransform, 0.5f, new Vector3( 0, 90f, 0 ), 0, GoKitLiteEasing.Back.EaseOut );
+    GoKitLite.instance.rotationTo( someTransform, 0.5f, new Vector3( 0, 90f, 0 ) )
+    	.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
 
     // tween the color of a material to red over 1 second with a 3 second delay before starting
     GoKitLite.instance.colorTo( someTransform, 1, Color.red, 3 );
@@ -21,18 +22,20 @@ Up above we mentioned that you can use a custom Action to handle a tween as well
         // do something really cool here like tweening a string or changing multiple objects/properties at once
     });
 
-GoKitLite also has a tween queue system to setup a series of tweens that will all run one after the other. Here is an example alternating positionTo and rotationTo tweens with a completion handler that will fire when the entire chain is complete:
 
-    new GoKitLite.TweenQueue().add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( -8, -3, 0 ) ); } )
-    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 90f, 0, 0 ) ); } )
-    	.add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 1, 2, -5 ) ); } )
-    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 0, 90, 90 ) ); } )
-    	.add( () => { return GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 0, 0, 0 ) ); } )
-    	.add( () => { return GoKitLite.instance.rotationTo( cube, 0.4f, new Vector3( 360, 360, 0 ), 0, GoKitLiteEasing.Quadratic.EaseInOut, true ); } )
-    	.setCompletionHandler( () => { Debug.Log( "Position and Rotation Queue Done" ); } )
-    	.start();
+GoKitLite also has a tween chaining system to setup a series of tweens that will all run one after the other. Here is an example alternating position and rotation tweens with a completion handler that will fire when the entire chain is complete:
 
-Building on the tween queue system there is also a tween flow system. TweenFlows let you setup a timeline of tweens each with a specific start time. Unlike TweenQueues, tweens in a TweenFlow can be running simultaneously. Here is an example of a position tween that has 4 rotation tweens applied while it is still in transit to it's final position. Note that the start method must be called as a coroutine:
+	GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( -8, -3, 0 ) )
+		.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
+		.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 90f, 0, 0 ) )
+		.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 1, 2, -5 ) )
+		.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 0, 90, 90 ) )
+		.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 0, 0, 0 ) )
+		.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 360, 360, 0 ) )
+		.setCompletionHandler( trans => { Debug.Log( "Position and Rotation Queue Done" ); } );
+
+
+Building on the tween chaining system there is also a tween flow system. TweenFlows let you setup a timeline of tweens each with a specific start time. Unlike TweenQueues, tweens in a TweenFlow can be running simultaneously. Here is an example of a position tween that has 4 rotation tweens applied while it is still in transit to it's final position. Note that the start method must be called as a coroutine:
 
     var flow = new GoKitLite.TweenFlow().add( 0, () => { return GoKitLite.instance.positionTo( cube, 5f, new Vector3( 10, 10, 10 ) ); } )
     	.add( 1f, () => { return GoKitLite.instance.rotationTo( cube, 0.5f, new Vector3( 90, 0, 0 ) ); } )
@@ -42,13 +45,23 @@ Building on the tween queue system there is also a tween flow system. TweenFlows
     	.setCompletionHandler( () => { Debug.Log( "All done with the position/rotation flow" ); } );
     StartCoroutine( flow.start() );
 
+
+
 GoKitActions
 =========
+
 GoKitActions is an optional class that contains additional actions that can be used with GoKitLite's customAction() method:
 
-    GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakePosition(cube, 0.6f), 0, GoKitLiteEasing.Linear.EaseNone );
+    GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.ShakePosition( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
+
 
 What about GoKit?
 =========
 
 GoKit has a slightly different focus than GoKitLite. It is highly customizeable and can tween anything at all. GoKit has all kinds of nifty features like chains, flows and full tween control in real time that arent ever going to be in GoKitLite. GoKitLite is made for folks who want a really easy API and just want to tween stuff now without much thought.
+
+
+
+License
+-----
+[Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode) with [simple explanation](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US) with the attribution clause waived. You are free to use GoKitLite in any and all games that you make. You cannot sell GoKitLite directly or as part of a larger game asset.
