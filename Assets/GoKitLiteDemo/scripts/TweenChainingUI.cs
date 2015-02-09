@@ -69,5 +69,16 @@ public class TweenChainingUI : MonoBehaviour
 				.next( 1.3f, Color.gray, "_Color" )
 				.setDelay( 0.2f );
 		}
+
+
+        if (GUILayout.Button("Custom Action Tween Queue"))
+        {
+            var from = cube.localPosition;
+            var to = from + new Vector3(4f, 4f, 0);
+
+            GoKitLite.instance.customAction(cube, 1, (tf, t) => tf.localPosition = Vector3.Lerp(from, to, t))
+                .next(1f, (tf, t) => tf.localPosition = Vector3.Lerp(to, from, t), 1f)
+                .setCompletionHandler(tf => Debug.Log("Custom Action Tween Queue Done"));
+        }
 	}
 }

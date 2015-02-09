@@ -459,6 +459,37 @@ namespace Prime31.GoKitLite
 				return tween;
 			}
 
+            
+            /// <summary>
+            /// add a custom action tween using this tween's Transform that will start as soon as the current tween completes
+            /// </summary>
+            public Tween next(float duration, Action<Transform, float> action, float delay = 0)
+            {
+                var tween = GoKitLite.instance.nextAvailableTween(transform, duration, TweenType.Action);
+                tween.delay = delay;
+                tween.easeFunction = easeFunction;
+                tween.customAction = action;
+
+                nextTween = tween;
+
+                return tween;
+            }
+
+
+            /// <summary>
+            /// add a custom action tween that will start as soon as the current tween completes
+            /// </summary>
+            public Tween next(Transform trans, float duration, Action<Transform, float> action, float delay = 0)
+            {
+                var tween = GoKitLite.instance.nextAvailableTween(trans, duration, TweenType.Action);
+                tween.delay = delay;
+                tween.easeFunction = easeFunction;
+                tween.customAction = action;
+
+                nextTween = tween;
+
+                return tween;
+            }
 		}
 
 
