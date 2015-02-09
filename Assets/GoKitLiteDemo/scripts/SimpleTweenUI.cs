@@ -7,6 +7,7 @@ public class SimpleTweenUI : MonoBehaviour
 {
 	public Transform cube;
 	public AnimationCurve easeCurve;
+    public bool paused;
 
 
 	void Start()
@@ -155,6 +156,12 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.stopAllTweens( true );
 		}
+
+        if (GUILayout.Button("Pause All Tweens"))
+        {
+            paused = !paused;
+            GoKitLite.instance.setAllTweensPauseState(paused);
+        }
 	}
 
 }

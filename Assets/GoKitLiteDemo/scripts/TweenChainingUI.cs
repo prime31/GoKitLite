@@ -28,7 +28,7 @@ public class TweenChainingUI : MonoBehaviour
 		if( GUILayout.Button( "Tween Position Queue with Delays" ) )
 		{
 			GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 10, 10, 10 ) )
-				.setDelay( 0.3f )
+                .setDelay( 0.3f )
 				.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
 				.next( 0.4f, new Vector3( 0, 0, 0 ), 0.3f )
 				.next( 0.4f, new Vector3( 0, -5, -10 ), 0.3f )
@@ -69,5 +69,17 @@ public class TweenChainingUI : MonoBehaviour
 				.next( 1.3f, Color.gray, "_Color" )
 				.setDelay( 0.2f );
 		}
+
+
+        if (GUILayout.Button("Custom Action Tween Queue"))
+        {
+            var from = cube.localPosition;
+            var to = from + new Vector3(4f, 4f, 0);
+
+            GoKitLite.instance.customAction(cube, 1, (tf, t) => tf.localPosition = Vector3.Lerp(from, to, t))
+                .setDelay(1f)
+                .next(1f, (tf, t) => tf.localPosition = Vector3.Lerp(to, from, t), 2f)
+                .setCompletionHandler(tf => Debug.Log("Custom Action Tween Queue Done"));
+        }
 	}
 }
