@@ -98,7 +98,10 @@ public class SimpleTweenUI : MonoBehaviour
 				color.a = 1 - dt;
 				trans.renderer.material.color = color;
 			};
-			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 1.0f, GoKitLiteEasing.Linear.EaseNone );
+
+			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action )
+				.setDelay( 1f )
+				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
@@ -111,7 +114,8 @@ public class SimpleTweenUI : MonoBehaviour
 				trans.renderer.material.color = color;
 			};
 
-			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone )
+			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action )
+				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone )
 				.setCompletionHandler( t =>
 			{
 				Debug.Log( "All done with custom action" );
@@ -135,19 +139,22 @@ public class SimpleTweenUI : MonoBehaviour
 
 		if( GUILayout.Button( "Shake Position Ramp up/down Tween" ) )
 		{
-			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePositionRamp( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePositionRamp( cube, 0.6f ) )
+				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
 		if( GUILayout.Button( "Shake Position Tween" ) )
 		{
-			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePosition( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePosition( cube, 0.6f ) )
+				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
 		if( GUILayout.Button( "Shake Scale Tween" ) )
 		{
-			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ), 0, GoKitLiteEasing.Linear.EaseNone );
+			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ) )
+				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
 		}
 
 
