@@ -343,6 +343,7 @@ namespace Prime31.GoKitLite
 			public Tween setDelay( float delay )
 			{
 				this.delay = delay;
+                _elapsedTime = -delay;
 				return this;
 			}
 
