@@ -56,6 +56,7 @@ namespace Prime31.GoKitLite
 			// internal state
 			private float _elapsedTime;
 			private TargetValueType targetValueType;
+			internal bool isPaused;
 
 
 			internal void reset()
@@ -64,7 +65,7 @@ namespace Prime31.GoKitLite
 				transform = null;
 				targetVector = _startVector = _diffVector = Vector3.zero;
 				delay = delayBetweenLoops = 0f;
-				isTimeScaleIndependent = isRunningInReverse = false;
+				isTimeScaleIndependent = isRunningInReverse = isPaused = false;
 				loopType = LoopType.None;
 				easeFunction = null;
 				isRelativeTween = false;
@@ -340,6 +341,7 @@ namespace Prime31.GoKitLite
 			public Tween setDelay( float delay )
 			{
 				this.delay = delay;
+				_elapsedTime = -delay;
 				return this;
 			}
 
@@ -456,6 +458,36 @@ namespace Prime31.GoKitLite
 				return tween;
 			}
 
+
+            /// <summary>
+            /// adds a custom action tween using this tween's Transform that will start as soon as the current tween completes
+            /// </summary>
+            public Tween next( float duration, Action<Transform, float> action )
+            {
+                var tween = GoKitLite.instance.nextAvailableTween( transform, duration, TweenType.Action );
+                tween.easeFunction = easeFunction;
+                tween.customAction = action;
+
+                nextTween = tween;
+
+                return tween;
+            }
+
+
+            /// <summary>
+            /// adds a custom action tween that will start as soon as the current tween completes
+            /// </summary>
+            public Tween next( Transform trans, float duration, Action<Transform, float> action )
+            {
+                var tween = GoKitLite.instance.nextAvailableTween( trans, duration, TweenType.Action );
+                tween.easeFunction = easeFunction;
+                tween.customAction = action;
+
+                nextTween = tween;
+
+                return tween;
+            }
+
 		}
 
 
@@ -528,6 +560,9 @@ namespace Prime31.GoKitLite
 			for( var i = _activeTweens.Count - 1; i >= 0; --i )
 			{
 				var tween = _activeTweens[i];
+				if( tween.isPaused )
+					continue;
+
 				if( tween.transform == null || tween.tick() )
 				{
 					if( tween.onComplete != null )
@@ -728,11 +763,9 @@ namespace Prime31.GoKitLite
 		}
 
 
-		public Tween customAction( Transform trans, float duration, Action<Transform,float> action, float delay = 0, EaseFunction easeFunction = null )
+		public Tween customAction( Transform trans, float duration, Action<Transform,float> action )
 		{
 			var tween = nextAvailableTween( trans, duration, TweenType.Action );
-			tween.delay = delay;
-			tween.easeFunction = easeFunction;
 			tween.customAction = action;
 			tween.prepareForUse();
 
@@ -797,6 +830,34 @@ namespace Prime31.GoKitLite
 		}
 
 
+        /// <summary>
+        /// set the tween's pause state. returns true if the tween was found.
+        /// </summary>
+        public bool setTweenPauseState( int id, bool isPaused )
+        {
+            for( var i = 0; i < _activeTweens.Count; i++ )
+            {
+                if( _activeTweens[i].id == id )
+                {
+                    _activeTweens[i].isPaused = isPaused;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// set all in-progress tween's pause state.
+        /// </summary>
+        public void setAllTweenPauseState( bool isPaused )
+        {
+            for( var i = 0; i < _activeTweens.Count; i++ )
+                _activeTweens[i].isPaused = isPaused;
+        }
+
+
 		/// <summary>
 		/// Checks if the current tween is active
 		/// </summary>
@@ -832,6 +893,21 @@ namespace Prime31.GoKitLite
 
 			return false;
 		}
+
+
+        /// <summary>
+        /// find an active tween with given id, do not store a reference to the tween!
+        /// </summary>
+        public Tween getActiveTween( int id )
+        {
+            for( var i = 0; i < _activeTweens.Count; i++ )
+            {
+                if( _activeTweens[i].id == id )
+                    return _activeTweens[i];
+            }
+
+            return null;
+        }
 
 	    #endregion
 
