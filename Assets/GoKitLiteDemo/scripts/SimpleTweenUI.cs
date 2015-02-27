@@ -94,9 +94,9 @@ public class SimpleTweenUI : MonoBehaviour
 			// dt 0 to 1 (except for bouce, punch they go a bit less than 0 and a bit more than 1)
 			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
-				var color = trans.renderer.material.color;
+				var color = trans.GetComponent<Renderer>().material.color;
 				color.a = 1 - dt;
-				trans.renderer.material.color = color;
+				trans.GetComponent<Renderer>().material.color = color;
 			};
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 1.0f, GoKitLiteEasing.Linear.EaseNone );
 		}
@@ -106,9 +106,9 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			System.Action<Transform,float> action = ( trans, dt ) =>
 			{
-				var color = trans.renderer.material.color;
+				var color = trans.GetComponent<Renderer>().material.color;
 				color.a = dt;
-				trans.renderer.material.color = color;
+				trans.GetComponent<Renderer>().material.color = color;
 			};
 
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action, 0, GoKitLiteEasing.Linear.EaseNone )

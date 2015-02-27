@@ -149,7 +149,7 @@ namespace Prime31.GoKitLite
 				}
 				else if( targetValueType == TargetValueType.Color )
 				{
-					_material = transform.renderer.material;
+					_material = transform.GetComponent<Renderer>().material;
 					_startColor = _material.GetColor( materialProperty );
 
 					if( isRelativeTween )
@@ -721,8 +721,8 @@ namespace Prime31.GoKitLite
 
 		public Tween colorFrom( Transform trans, float duration, Color targetColor, string materialProperty = "_Color", bool isRelativeTween = false )
 		{
-			var currentColor = trans.renderer.material.GetColor( materialProperty );
-			trans.renderer.material.SetColor( materialProperty, targetColor );
+			var currentColor = trans.GetComponent<Renderer>().material.GetColor( materialProperty );
+			trans.GetComponent<Renderer>().material.SetColor( materialProperty, targetColor );
 
 			return colorTo( trans, duration, currentColor, materialProperty, isRelativeTween );
 		}
