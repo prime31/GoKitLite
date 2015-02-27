@@ -23,6 +23,7 @@ namespace Prime31.GoKitLite
 			// common properties
 			internal int id;
 			internal Transform transform;
+			internal RectTransform rectTransform;
 			internal TweenType tweenType;
 			internal bool isTimeScaleIndependent;
 			internal bool isRunningInReverse;
@@ -63,6 +64,7 @@ namespace Prime31.GoKitLite
 			{
 				// any pointers or values that are not guaranteed to be set later are defaulted here
 				transform = null;
+				rectTransform = null;
 				targetVector = _startVector = _diffVector = Vector3.zero;
 				delay = delayBetweenLoops = 0f;
 				isTimeScaleIndependent = isRunningInReverse = isPaused = false;
@@ -125,6 +127,10 @@ namespace Prime31.GoKitLite
 							_diffVector = targetVector;
 						else
 							_diffVector = new Vector3( Mathf.DeltaAngle( _startVector.x, targetVector.x ), Mathf.DeltaAngle( _startVector.y, targetVector.y ), Mathf.DeltaAngle( _startVector.z, targetVector.z ) );
+						break;
+					case TweenType.RectTransformPosition:
+						targetValueType = TargetValueType.Vector3;
+						_startVector = rectTransform.anchoredPosition3D;
 						break;
 					case TweenType.Color:
 						targetValueType = TargetValueType.Color;
@@ -270,6 +276,9 @@ namespace Prime31.GoKitLite
 						break;
 					case TweenType.LocalRotation:
 						transform.localEulerAngles = vec;
+						break;
+					case TweenType.RectTransformPosition:
+						rectTransform.anchoredPosition3D = vec;
 						break;
 				}
 			}
@@ -498,6 +507,7 @@ namespace Prime31.GoKitLite
 			Rotation,
 			LocalRotation,
 			Scale,
+			RectTransformPosition,
 			Color,
 			Action,
 			Property
@@ -706,6 +716,18 @@ namespace Prime31.GoKitLite
 		public Tween rotationTo( Transform trans, float duration, Vector3 targetEulers, bool isRelativeTween = false )
 		{
 			var tween = vectorTweenTo( trans, TweenType.Rotation, duration, targetEulers, isRelativeTween );
+
+			tween.prepareForUse();
+			_activeTweens.Add( tween );
+
+			return tween;
+		}
+
+
+		public Tween rectTransformPositionTo( RectTransform trans, float duration, Vector3 targetScale, bool isRelativeTween = false )
+		{
+			var tween = vectorTweenTo( trans, TweenType.RectTransformPosition, duration, targetScale, isRelativeTween );
+			tween.rectTransform = trans;
 
 			tween.prepareForUse();
 			_activeTweens.Add( tween );

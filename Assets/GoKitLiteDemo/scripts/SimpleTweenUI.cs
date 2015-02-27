@@ -1,12 +1,14 @@
 using UnityEngine;
 using System.Collections;
 using Prime31.GoKitLite;
+using UnityEngine.UI;
 
 
 public class SimpleTweenUI : MonoBehaviour
 {
 	public Transform cube;
 	public AnimationCurve easeCurve;
+	public RectTransform panel;
 
 
 	void Start()
@@ -155,6 +157,26 @@ public class SimpleTweenUI : MonoBehaviour
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ) )
 				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+		}
+
+
+		if( GUILayout.Button( "RectTransform Panel Position Tween" ) )
+		{
+			GoKitLite.instance.rectTransformPositionTo( panel, 1.0f, new Vector3( -Screen.width * 0.5f, -Screen.height * 0.5f ), true )
+				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
+				.setLoopType( GoKitLite.LoopType.PingPong, 2, 0.2f );
+		}
+
+
+		if( GUILayout.Button( "RectTransform Button Position Tween" ) )
+		{
+			GoKitLite.instance.rectTransformPositionTo( panel.GetChild( 0 ) as RectTransform, 1.0f, new Vector3( 0f, panel.rect.height * 0.8f ), true )
+				.setLoopType( GoKitLite.LoopType.PingPong, 1, 0.5f );
+
+			GoKitLite.instance.rectTransformPositionTo( panel.GetChild( 1 ) as RectTransform, 1.0f, new Vector3( 0f, panel.rect.height * 0.8f ), true )
+				.setDelay( 0.2f )
+				.setLoopType( GoKitLite.LoopType.PingPong, 1, 0.5f )
+				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
 		}
 
 
