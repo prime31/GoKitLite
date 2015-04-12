@@ -833,7 +833,25 @@ namespace Prime31.GoKitLite
 
 			return false;
 		}
+		
+		/// <summary>
+		/// stops all the tweens for a specified transform optionally bringing it to its final value first. returns true if a tween was found and stopped.
+		/// </summary>
+		public bool stopTweenForTransform( Transform trans, bool bringToCompletion)
+		{
+			bool didRemoveTween = false;
+			for (var i = 0; i < _activeTweens.Count; i++) {
+				if (_activeTweens[i].transform.Equals(trans)) {
+					if( bringToCompletion )
+						_activeTweens[i].tick( true );
 
+					removeTween( _activeTweens[i], i );
+					didRemoveTween = true;
+				}
+			}
+
+			return didRemoveTween;
+		}
 
 		/// <summary>
 		/// Stops all in-progress tweens optionally bringing them to their final values.
