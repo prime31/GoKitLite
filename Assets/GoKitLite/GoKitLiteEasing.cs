@@ -5,32 +5,13 @@ using System;
 
 namespace Prime31.GoKitLite
 {
-	public static class GoKitLiteEasing
+	/// <summary>
+	/// standard easing equations simplified by replacing the b and c params (begin and change values) with 0 and
+	/// 1 then reducing. This is done so that we can get back a raw value between 0 - 1 (except elastic/bounce which
+	/// purposely go over the bounds) and then use that value to lerp anything.
+	/// </summary>
+	public static class Easing
 	{
-		public static class Custom
-		{
-			/// <summary>
-			/// uses an AnimationCurve for easing. the curve should have a start time of 0. The end time can be anything since
-			/// it will be scaled but it is usually easiest to just use the 0 - 1 time range.
-			/// </summary>
-			/// <returns>The curve ease.</returns>
-			/// <param name="curve">Curve.</param>
-			public static Func<float,float,float> AnimationCurveEase( AnimationCurve curve )
-			{
-				// we need the curve's total duration so we can scale it to the actual tween's duration
-				var curveDuration = curve.keys[curve.length - 1].time;
-
-				Func<float,float,float> func = ( t, d ) =>
-				{
-					var timeScaler = curveDuration / d;
-					return curve.Evaluate( timeScaler * t );
-				};
-
-				return func;
-			}
-		}
-
-
 		public static class Linear
 		{
 			public static float EaseNone( float t, float d )

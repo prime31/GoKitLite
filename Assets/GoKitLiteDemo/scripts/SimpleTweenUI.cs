@@ -23,7 +23,7 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Position Tween with PingPong Loop" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 1f, 2f ), new Vector3( 10, 5, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
+				.setEaseType( EaseType.BounceOut )
 				.setLoopType( GoKitLite.LoopType.PingPong, 2 )
 				.setLoopCompletionHandler( t => Debug.Log( "Loop iteration done" ) )
 				.setCompletionHandler( t => Debug.Log( "Tween complete" ) );
@@ -33,14 +33,14 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Relative Position Tween" ) )
 		{
 			GoKitLite.instance.positionTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 1, 0, 0 ), true )
-				.setEaseFunction( GoKitLiteEasing.Cubic.EaseIn );
+				.setEaseType( EaseType.CubicIn );
 		}
 
 
 		if( GUILayout.Button( "AnimationCurve for Easing Scale" ) )
 		{
 			GoKitLite.instance.scaleTo( cube, 2f, new Vector3( 3, 3, 3 ) )
-				.setEaseFunction( GoKitLiteEasing.Custom.AnimationCurveEase( easeCurve ) );
+				.setAnimationCurve( easeCurve );
 		}
 
 
@@ -53,41 +53,41 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Scale to 0.5" ) )
 		{
 			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 0.5f, 0.5f, 0.5f ) )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut );
+				.setEaseType( EaseType.BounceOut );
 		}
 
 
 		if( GUILayout.Button( "Punch Scale to 3" ) )
 		{
 			GoKitLite.instance.scaleTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 3, 3, 3 ) )
-				.setEaseFunction( GoKitLiteEasing.Elastic.Punch );
+				.setEaseType( EaseType.Punch );
 		}
 
 
 		if( GUILayout.Button( "Rotation to 90,0,0" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 90f, 0, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
+				.setEaseType( EaseType.BackOut );
 		}
 
 
 		if( GUILayout.Button( "Rotation to 270,0,0" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 270f, 0, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
+				.setEaseType( EaseType.BackOut );
 		}
 
 
 		if( GUILayout.Button( "Rotation to 0,310,0" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, Random.Range( 0.2f, 1 ), new Vector3( 0, 310, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
+				.setEaseType( EaseType.BackOut );
 		}
 
 		if( GUILayout.Button( "Rotation by 360,0,0 (relative tween)" ) )
 		{
 			GoKitLite.instance.rotationTo( cube, 1, new Vector3( 360f, 0, 0 ), true )
-				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
+				.setEaseType( EaseType.BackOut );
 		}
 
 
@@ -103,7 +103,7 @@ public class SimpleTweenUI : MonoBehaviour
 
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action )
 				.setDelay( 1f )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+				.setEaseType( EaseType.Linear );
 		}
 
 
@@ -117,7 +117,7 @@ public class SimpleTweenUI : MonoBehaviour
 			};
 
 			GoKitLite.instance.customAction( cube, Random.Range( 0.2f, 1 ), action )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone )
+				.setEaseType( EaseType.Linear )
 				.setCompletionHandler( t =>
 			{
 				Debug.Log( "All done with custom action" );
@@ -142,28 +142,28 @@ public class SimpleTweenUI : MonoBehaviour
 		if( GUILayout.Button( "Shake Position Ramp up/down Tween" ) )
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePositionRamp( cube, 0.6f ) )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+				.setEaseType( EaseType.Linear );
 		}
 
 
 		if( GUILayout.Button( "Shake Position Tween" ) )
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakePosition( cube, 0.6f ) )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+				.setEaseType( EaseType.Linear );
 		}
 
 
 		if( GUILayout.Button( "Shake Scale Tween" ) )
 		{
 			GoKitLite.instance.customAction( cube, 2, GoKitLiteActions.shakeScale( cube, 0.6f ) )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+				.setEaseType( EaseType.Linear );
 		}
 
 
 		if( GUILayout.Button( "RectTransform Panel Position Tween" ) )
 		{
 			GoKitLite.instance.rectTransformPositionTo( panel, 1.0f, new Vector3( -Screen.width * 0.5f, -Screen.height * 0.5f ), true )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
+				.setEaseType( EaseType.BounceOut )
 				.setLoopType( GoKitLite.LoopType.PingPong, 2, 0.2f );
 		}
 
@@ -176,7 +176,7 @@ public class SimpleTweenUI : MonoBehaviour
 			GoKitLite.instance.rectTransformPositionTo( panel.GetChild( 1 ) as RectTransform, 1.0f, new Vector3( 0f, panel.rect.height * 0.8f ), true )
 				.setDelay( 0.2f )
 				.setLoopType( GoKitLite.LoopType.PingPong, 1, 0.5f )
-				.setEaseFunction( GoKitLiteEasing.Back.EaseOut );
+				.setEaseType( EaseType.BackOut );
 		}
 
 

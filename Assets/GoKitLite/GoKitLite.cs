@@ -30,7 +30,8 @@ namespace Prime31.GoKitLite
 			internal float duration;
 			internal float delay;
 			internal float delayBetweenLoops;
-			internal EaseFunction easeFunction;
+			internal EaseType easeType;
+			internal AnimationCurve animCurve;
 			internal bool isRelativeTween;
 			internal Action<Transform> onComplete;
 			internal Action<Transform> onLoopComplete;
@@ -69,7 +70,8 @@ namespace Prime31.GoKitLite
 				delay = delayBetweenLoops = 0f;
 				isTimeScaleIndependent = isRunningInReverse = isPaused = false;
 				loopType = LoopType.None;
-				easeFunction = null;
+				easeType = GoKitLite.defaultEaseType;
+				animCurve = null;
 				isRelativeTween = false;
 				onComplete = onLoopComplete = null;
 				customAction = null;
@@ -93,9 +95,6 @@ namespace Prime31.GoKitLite
 			/// </summary>
 			internal void prepareForUse()
 			{
-				if( easeFunction == null )
-					easeFunction = defaultEaseFunction;
-
 				switch( tweenType )
 				{
 					case TweenType.Position:
@@ -183,7 +182,7 @@ namespace Prime31.GoKitLite
 					return false;
 
 				var modifiedElapsedTime = isRunningInReverse ? duration - _elapsedTime : _elapsedTime;
-				var easedTime = easeFunction( modifiedElapsedTime, duration );
+				var easedTime = ( animCurve == null ) ? EaseHelper.ease( easeType, modifiedElapsedTime, duration ) : animCurve.Evaluate( modifiedElapsedTime / duration );
 
 				// special case: Action tweens
 				if( tweenType == TweenType.Action )
@@ -295,11 +294,18 @@ namespace Prime31.GoKitLite
 
 
 			/// <summary>
-			/// chainable. Sets the EaseFunction used by the tween.
+			/// chainable. Sets the EaseType used by the tween.
 			/// </summary>
-			public Tween setEaseFunction( EaseFunction easeFunction )
+			public Tween setEaseType( EaseType easeType )
 			{
-				this.easeFunction = easeFunction;
+				this.easeType = easeType;
+				return this;
+			}
+
+
+			public Tween setAnimationCurve( AnimationCurve animCurve )
+			{
+				this.animCurve = animCurve;
 				return this;
 			}
 
@@ -433,7 +439,7 @@ namespace Prime31.GoKitLite
 			public Tween next( float duration, Color targetColor )
 			{
 				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, "_Color", false );
-				tween.easeFunction = easeFunction;
+				tween.easeType = easeType;
 				nextTween = tween;
 
 				return tween;
@@ -446,7 +452,7 @@ namespace Prime31.GoKitLite
 			public Tween next( float duration, Color targetColor, string materialProperty, bool isRelativeTween = false )
 			{
 				var tween = GoKitLite.instance.colorTweenTo( transform, duration, targetColor, materialProperty, isRelativeTween );
-				tween.easeFunction = easeFunction;
+				tween.easeType = easeType;
 				nextTween = tween;
 
 				return tween;
@@ -459,7 +465,7 @@ namespace Prime31.GoKitLite
 			public Tween next( float duration, ITweenable newPropertyTween )
 			{
 				var tween = GoKitLite.instance.nextAvailableTween( transform, duration, TweenType.Property );
-				tween.easeFunction = easeFunction;
+				tween.easeType = easeType;
 				tween.propertyTween = newPropertyTween;
 
 				nextTween = tween;
@@ -474,7 +480,7 @@ namespace Prime31.GoKitLite
             public Tween next( float duration, Action<Transform, float> action )
             {
                 var tween = GoKitLite.instance.nextAvailableTween( transform, duration, TweenType.Action );
-                tween.easeFunction = easeFunction;
+				tween.easeType = easeType;
                 tween.customAction = action;
 
                 nextTween = tween;
@@ -489,7 +495,7 @@ namespace Prime31.GoKitLite
             public Tween next( Transform trans, float duration, Action<Transform, float> action )
             {
                 var tween = GoKitLite.instance.nextAvailableTween( trans, duration, TweenType.Action );
-                tween.easeFunction = easeFunction;
+				tween.easeType = easeType;
                 tween.customAction = action;
 
                 nextTween = tween;
@@ -527,7 +533,7 @@ namespace Prime31.GoKitLite
 		private List<Tween> _activeTweens = new List<Tween>( 20 );
 		internal Stack<Tween> _inactiveTweenStack = new Stack<Tween>( 20 );
 		private int _tweenIdCounter = 0;
-		public static EaseFunction defaultEaseFunction = GoKitLiteEasing.Quartic.EaseIn;
+		public static EaseType defaultEaseType = EaseType.QuartIn;
 
 		/// <summary>
 		/// holds the singleton instance. creates one on demand if none exists.

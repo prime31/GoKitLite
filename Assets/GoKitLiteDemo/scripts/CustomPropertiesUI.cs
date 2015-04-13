@@ -39,7 +39,7 @@ public class CustomPropertiesUI : MonoBehaviour
 		{
 			var prop = new FloatTweenProperty( this, "width", 8f );
 			GoKitLite.instance.propertyTween( prop, 2f )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut );
+				.setEaseType( EaseType.BounceOut );
 		}
 
 
@@ -47,7 +47,7 @@ public class CustomPropertiesUI : MonoBehaviour
 		{
 			var prop = new FloatTweenProperty( this, "height", 2f, true );
 			GoKitLite.instance.propertyTween( prop, 1f )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut );
+				.setEaseType( EaseType.BounceOut );
 		}
 
 
@@ -57,7 +57,7 @@ public class CustomPropertiesUI : MonoBehaviour
 			var backHomeTween = new Vector3TweenProperty( cube, "position", Vector3.zero );
 
 			GoKitLite.instance.propertyTween( toTenTween, 1f )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
+				.setEaseType( EaseType.BounceOut )
 				.next( 1f, backHomeTween );
 		}
 
@@ -66,7 +66,7 @@ public class CustomPropertiesUI : MonoBehaviour
 		{
 			var prop = new Vector2TweenProperty( cube.GetComponent<Renderer>().material, "mainTextureOffset", new Vector2( 50, 50 ) );
 			GoKitLite.instance.propertyTween( prop, 60f )
-				.setEaseFunction( GoKitLiteEasing.Linear.EaseNone );
+				.setEaseType( EaseType.Linear );
 		}
 	}
 

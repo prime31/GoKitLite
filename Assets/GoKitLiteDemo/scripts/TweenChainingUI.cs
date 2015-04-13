@@ -17,7 +17,7 @@ public class TweenChainingUI : MonoBehaviour
 		if( GUILayout.Button( "Tween Position Queue" ) )
 		{
 			GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 10, 10, 10 ) )
-				.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
+				.setEaseType( EaseType.QuadInOut )
 				.next( 0.4f, new Vector3( 0, 0, 0 ) )
 				.next( 0.4f, new Vector3( 0, -5, -10 ) )
 				.next( 0.4f, new Vector3( -3, 5, 20 ) )
@@ -29,7 +29,7 @@ public class TweenChainingUI : MonoBehaviour
 		{
 			GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( 10, 10, 10 ) )
 				.setDelay( 0.3f )
-				.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
+				.setEaseType( EaseType.QuadInOut )
 				.next( 0.4f, new Vector3( 0, 0, 0 ), 0.3f )
 				.next( 0.4f, new Vector3( 0, -5, -10 ), 0.3f )
 				.next( 0.4f, new Vector3( -3, 5, 20 ), 0.3f )
@@ -40,7 +40,7 @@ public class TweenChainingUI : MonoBehaviour
 		if( GUILayout.Button( "Tween Position and Rotation Queue" ) )
 		{
 			GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( -8, -3, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
+				.setEaseType( EaseType.QuadInOut )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 90f, 0, 0 ) )
 				.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 1, 2, -5 ) )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 0, 90, 90 ) )
@@ -53,18 +53,18 @@ public class TweenChainingUI : MonoBehaviour
 		if( GUILayout.Button( "Lots of Stuff Queue" ) )
 		{
 			GoKitLite.instance.positionTo( cube, 0.4f, new Vector3( -8, -3, 0 ) )
-				.setEaseFunction( GoKitLiteEasing.Quadratic.EaseInOut )
+				.setEaseType( EaseType.QuadInOut )
 				.next( 0.3f, Color.red )
 				.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 1, 2, -5 ) )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 0, 90, 90 ) )
 				.next( 0.3f, Color.yellow )
 				.next( GoKitLite.TweenType.Scale, 0.8f, new Vector3( 3, 3, 3 ) )
-				.setEaseFunction( GoKitLiteEasing.Elastic.Punch )
+				.setEaseType( EaseType.Punch )
 				.next( GoKitLite.TweenType.Position, 0.4f, new Vector3( 0, 0, 0 ) )
 				.next( 0.3f, Color.blue )
 				.next( GoKitLite.TweenType.Rotation, 0.4f, new Vector3( 360, 360, 0 ), true )
 				.next( GoKitLite.TweenType.Scale, 0.8f, new Vector3( 4f, 0.2f, 0.2f ) )
-				.setEaseFunction( GoKitLiteEasing.Bounce.EaseOut )
+				.setEaseType( EaseType.BounceOut )
 				.setLoopType( GoKitLite.LoopType.PingPong, 1 )
 				.next( 1.3f, Color.gray, "_Color" )
 				.setDelay( 0.2f );
