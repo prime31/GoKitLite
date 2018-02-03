@@ -212,10 +212,10 @@ namespace Prime31.GoKitLite
 				}
 
 				// if we have a loopType and we are done do the loop
-				if( loopType != GoKitLite.LoopType.None && _elapsedTime == duration )
+				if( loopType != GoKitLite.LoopType.None &&  Mathf.Approximately(_elapsedTime, duration) )
 					handleLooping();
 
-				return _elapsedTime == duration;
+				return Mathf.Approximately(_elapsedTime, duration);
 			}
 
 
